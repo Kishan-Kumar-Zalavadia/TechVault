@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,6 +31,97 @@
   --radius-sm: 8px;
   --sidebar-w: 280px;
   --header-h: 60px;
+}
+
+/* ══ LIGHT THEME ══ */
+[data-theme="light"] {
+  --bg:          #f6f8fc;
+  --bg2:         #ffffff;
+  --bg3:         #eef2f8;
+  --bg4:         #e3ecf5;
+  --border:      #c6d6e8;
+  /* Accent colors darkened for WCAG AA contrast on white */
+  --cyan:        #0072a0;
+  --cyan-dim:    rgba(0,114,160,0.10);
+  --cyan-glow:   rgba(0,114,160,0.06);
+  --orange:      #b84000;
+  --orange-dim:  rgba(184,64,0,0.10);
+  --green:       #0a8a58;
+  --green-dim:   rgba(10,138,88,0.10);
+  --purple:      #5b21b6;
+  --purple-dim:  rgba(91,33,182,0.10);
+  --yellow:      #a86000;
+  --red:         #c02828;
+  --text:        #0d1825;
+  --text-dim:    #2e4a6a;
+  --text-muted:  #4d6888;
+}
+
+/* ══ SMOOTH THEME TRANSITIONS ══ */
+body, #sidebar, #top-bar {
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+
+/* ══ LIGHT-MODE: TOPBAR (hardcoded bg override) ══ */
+[data-theme="light"] #top-bar {
+  background: rgba(246,248,252,0.96);
+}
+
+/* ══ LIGHT-MODE: SIDEBAR ══ */
+[data-theme="light"] #sidebar {
+  box-shadow: 2px 0 20px rgba(0,0,0,0.08);
+}
+
+/* ══ LIGHT-MODE: CODE BLOCK HEADER stays dark ══ */
+[data-theme="light"] .code-header {
+  background: #1a2738;
+  border-color: #223048;
+  color: #7090b0;
+}
+[data-theme="light"] .copy-btn {
+  background: #1e2d42;
+  border-color: #253550;
+  color: #7090b0;
+}
+[data-theme="light"] .copy-btn:hover  { border-color: #0072a0; color: #0072a0; }
+[data-theme="light"] .copy-btn.copied { border-color: #0a8a58; color: #0a8a58; }
+
+/* ══ LIGHT-MODE: INFO BOXES (hardcoded text colors) ══ */
+[data-theme="light"] .info-box.tip      { color: var(--cyan); }
+[data-theme="light"] .info-box.warn     { color: var(--yellow); }
+[data-theme="light"] .info-box.note     { color: var(--green); }
+[data-theme="light"] .info-box.important { color: var(--red); }
+
+/* ══ LIGHT-MODE: ANALOGY BOX (hardcoded text color override) ══ */
+[data-theme="light"] .analogy-box p { color: #7a4510 !important; }
+
+/* ══ LIGHT-MODE: QUIZ hover (hardcoded rgba white override) ══ */
+[data-theme="light"] .quiz-opt:hover {
+  border-color: #aec4d8;
+  background: var(--bg4);
+}
+
+/* ══ LIGHT-MODE: TABLE row border (hardcoded dark rgba override) ══ */
+[data-theme="light"] .styled-table td { border-bottom-color: var(--border); }
+
+/* ══ THEME TOGGLE BUTTON ══ */
+.theme-btn {
+  width: 30px; height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.theme-btn:hover {
+  border-color: var(--cyan);
+  color: var(--text);
+  transform: rotate(15deg);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1046,7 +1137,7 @@ ul.feature-list li::before {
     <div id="progress-track"><div id="progress-fill"></div></div>
     <div id="progress-pct">0%</div>
   </div>
-
+  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light / dark mode">☀️</button>
 </div>
 
 <!-- SIDEBAR -->
@@ -3598,6 +3689,28 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.05 });
 
 document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ════════════════════════════════════════
+//   THEME
+// ════════════════════════════════════════
+(function initTheme() {
+  let saved;
+  try { saved = localStorage.getItem('techvault-theme'); } catch(e) {}
+  const theme = (saved === 'light' || saved === 'dark') ? saved
+    : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+})();
+
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = next === 'dark' ? '☀️' : '🌙';
+  try { localStorage.setItem('techvault-theme', next); } catch(e) {}
+}
 
 // ════════════════════════════════════════
 //   INIT

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,6 +39,121 @@
   --sw: 270px;
   --hh: 58px;
 }
+
+/* ══ LIGHT THEME ══ */
+[data-theme="light"] {
+  --bg:          #f6f8fc;
+  --bg2:         #ffffff;
+  --bg3:         #eef2f8;
+  --bg4:         #e3ecf5;
+  --bg5:         #d8e4f0;
+  --border:      #c6d6e8;
+  --border2:     #aec4d8;
+  /* Accent colors darkened for WCAG AA contrast on white */
+  --react:       #0080a8;
+  --react-dim:   rgba(0,128,168,0.10);
+  --react-glow:  rgba(0,128,168,0.06);
+  --green:       #0a9060;
+  --green-dim:   rgba(10,144,96,0.10);
+  --yellow:      #a86000;
+  --yellow-dim:  rgba(168,96,0,0.10);
+  --red:         #c02828;
+  --red-dim:     rgba(192,40,40,0.10);
+  --purple:      #5b21b6;
+  --purple-dim:  rgba(91,33,182,0.10);
+  --pink:        #9d1358;
+  --pink-dim:    rgba(157,19,88,0.10);
+  --orange:      #b84000;
+  --orange-dim:  rgba(184,64,0,0.10);
+  --text:        #0d1825;
+  --text-dim:    #2e4a6a;
+  --text-muted:  #4d6888;
+  /* Part-3 alias vars */
+  --bdr:         #c6d6e8;
+  --c-cyan:      #0080a8;
+  --c-cyan20:    rgba(0,128,168,0.10);
+  --c-green:     #0a9060;
+  --c-yellow:    #a86000;
+  --txt2:        #3a5878;
+}
+
+/* ══ SMOOTH THEME TRANSITIONS ══ */
+body, #sidebar, #topbar {
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+
+/* ══ LIGHT-MODE TOPBAR (hardcoded bg override) ══ */
+[data-theme="light"] #topbar {
+  background: rgba(246,248,252,0.96);
+}
+
+/* ══ LIGHT-MODE SIDEBAR ══ */
+[data-theme="light"] #sidebar {
+  box-shadow: 2px 0 20px rgba(0,0,0,0.08);
+}
+
+/* ══ LIGHT-MODE: CODE BLOCK HEADER stays dark ══ */
+[data-theme="light"] .cbhead {
+  background: #1a2738;
+  border-color: #223048;
+  color: #7090b0;
+}
+[data-theme="light"] .copybtn {
+  background: #1e2d42;
+  border-color: #253550;
+  color: #7090b0;
+}
+[data-theme="light"] .copybtn:hover { border-color: #0080a8; color: #0080a8; }
+[data-theme="light"] .copybtn.ok   { border-color: #0a9060; color: #0a9060; }
+
+/* ══ LIGHT-MODE: PLAYGROUND TEXTAREA (transparent bg → needs text fix) ══ */
+[data-theme="light"] .pg-editor textarea { color: #1e3a58; }
+[data-theme="light"] .pg-output { background: var(--bg3); }
+
+/* ══ LIGHT-MODE: FILL-IN-BLANK ══ */
+[data-theme="light"] .fib-blank {
+  background: var(--bg4);
+  border-color: var(--border2);
+  color: var(--text);
+}
+[data-theme="light"] .fib-blank:focus { border-color: var(--react); background: var(--react-dim); }
+
+/* ══ LIGHT-MODE: CALLOUT TEXT (hardcoded colors override) ══ */
+[data-theme="light"] .callout.tip    { color: var(--react); }
+[data-theme="light"] .callout.warn   { color: var(--yellow); }
+[data-theme="light"] .callout.note   { color: var(--green); }
+[data-theme="light"] .callout.danger { color: var(--red); }
+[data-theme="light"] .callout.analogy { color: var(--purple); }
+
+/* ══ LIGHT-MODE: QUIZ hover (hardcoded rgba white override) ══ */
+[data-theme="light"] .quiz-opt:hover {
+  border-color: var(--border2);
+  background: var(--bg4);
+}
+
+/* ══ LIGHT-MODE: TABLE row border (hardcoded dark rgba override) ══ */
+[data-theme="light"] .tbl td { border-bottom-color: var(--border); }
+
+/* ══ THEME TOGGLE BUTTON ══ */
+.theme-btn {
+  width: 30px; height: 30px;
+  border-radius: var(--rs);
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.theme-btn:hover {
+  border-color: var(--react);
+  color: var(--text);
+  transform: rotate(15deg);
+}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;font-size:15px}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-weight:400;line-height:1.7;overflow-x:hidden}
@@ -507,6 +622,7 @@ ul.fl li::before{content:'▸';color:var(--mc,var(--react));flex-shrink:0;margin
     <div id="progpct">0%</div>
   </div>
   <div class="xp-badge">⚡ <span id="xp">0</span> XP</div>
+  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light / dark mode">☀️</button>
 </div>
 
 <!-- ══ SIDEBAR ══ -->
@@ -4668,6 +4784,26 @@ const spy = new IntersectionObserver(entries => {
   });
 }, { rootMargin: '-20% 0px -70% 0px' });
 document.querySelectorAll('section[id]').forEach(s => spy.observe(s));
+
+// ── THEME ────────────────────────────────────────────────────────
+(function initTheme() {
+  let saved;
+  try { saved = localStorage.getItem('techvault-theme'); } catch(e) {}
+  const theme = (saved === 'light' || saved === 'dark') ? saved
+    : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+})();
+
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = next === 'dark' ? '☀️' : '🌙';
+  try { localStorage.setItem('techvault-theme', next); } catch(e) {}
+}
 
 // ── INIT ─────────────────────────────────────────────────────────
 updateProgress();
