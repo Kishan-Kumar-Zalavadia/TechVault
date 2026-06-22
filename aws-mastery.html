@@ -1,0 +1,3620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Cloud Mastery — Interactive Learning Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07090f;
+  --bg2: #0d1117;
+  --bg3: #141b27;
+  --bg4: #1a2335;
+  --border: #1e2d42;
+  --cyan: #00d4ff;
+  --cyan-dim: rgba(0,212,255,0.15);
+  --cyan-glow: rgba(0,212,255,0.08);
+  --orange: #ff7b3a;
+  --orange-dim: rgba(255,123,58,0.15);
+  --green: #00e5a0;
+  --green-dim: rgba(0,229,160,0.12);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,0.12);
+  --yellow: #fbbf24;
+  --red: #ff4d6a;
+  --text: #e2ecf5;
+  --text-dim: #7a9ab8;
+  --text-muted: #445c76;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --sidebar-w: 280px;
+  --header-h: 60px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 15px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── TOP PROGRESS BAR ── */
+#top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  background: rgba(7,9,15,0.96);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 20px 0 calc(var(--sidebar-w) + 20px);
+  gap: 16px;
+}
+
+#top-bar .logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--cyan);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+#progress-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#progress-track {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  border-radius: 99px;
+  width: 0%;
+  transition: width 0.6s ease;
+}
+
+#progress-pct {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--cyan);
+  white-space: nowrap;
+}
+
+
+
+/* ── SIDEBAR ── */
+#sidebar {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 900;
+  padding: 20px 0 40px;
+}
+
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-track { background: transparent; }
+#sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+.sidebar-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 12px 20px 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  border-left: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.nav-item:hover { color: var(--text); background: var(--bg3); }
+
+.nav-item.active {
+  color: var(--cyan);
+  border-left-color: var(--cyan);
+  background: var(--cyan-glow);
+}
+
+.nav-item.done .nav-check { color: var(--green); }
+
+.nav-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+.nav-item.done .nav-check {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.nav-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  width: 16px;
+}
+
+/* ── MAIN CONTENT ── */
+#main {
+  margin-left: var(--sidebar-w);
+  padding-top: calc(var(--header-h) + 40px);
+  padding-bottom: 80px;
+  min-height: 100vh;
+}
+
+/* ── HERO ── */
+#hero {
+  text-align: center;
+  padding: 60px 40px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 40% at 80% 80%, rgba(255,123,58,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--cyan-dim);
+  border: 1px solid rgba(0,212,255,0.3);
+  border-radius: 99px;
+  padding: 4px 14px;
+  font-size: 0.78rem;
+  color: var(--cyan);
+  letter-spacing: 0.04em;
+  margin-bottom: 24px;
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+
+.hero-title span { color: var(--cyan); }
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: var(--text-dim);
+  max-width: 620px;
+  margin: 0 auto 40px;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  animation: fadeUp 0.6s 0.3s ease both;
+  flex-wrap: wrap;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-n {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--cyan);
+  line-height: 1;
+}
+
+.stat-l {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.scroll-hint {
+  margin-top: 40px;
+  animation: bounce 2s infinite;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* ── CLOUD ANIMATION ── */
+.cloud-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  max-width: 500px;
+  margin: 40px auto;
+  animation: fadeUp 0.6s 0.25s ease both;
+}
+
+.cloud-service-chip {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: center;
+  transition: all 0.2s;
+  cursor: default;
+}
+
+.cloud-service-chip:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: var(--cyan-glow);
+  transform: translateY(-2px);
+}
+
+/* ── SECTIONS ── */
+.section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 32px 60px;
+}
+
+.module-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 32px;
+  padding: 28px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
+}
+
+.module-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 100% at 0% 50%, var(--module-color-dim, var(--cyan-dim)) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.module-icon {
+  width: 52px;
+  height: 52px;
+  background: var(--module-color-dim, var(--cyan-dim));
+  border: 1px solid var(--module-color, var(--cyan));
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.module-meta { flex: 1; }
+
+.module-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--module-color, var(--cyan));
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.module-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.55rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.module-desc {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.module-num {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 4rem;
+  color: var(--border);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ── CONCEPT CARDS ── */
+.concept-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.concept-card:hover { border-color: rgba(255,255,255,0.1); }
+
+.concept-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.concept-icon {
+  font-size: 1.1rem;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.concept-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.concept-chevron {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  transition: transform 0.3s;
+}
+
+.concept-card.open .concept-chevron { transform: rotate(90deg); }
+
+.concept-body {
+  display: none;
+  padding: 0 20px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.concept-card.open .concept-body { display: block; }
+
+.concept-body p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 12px; }
+
+/* ── CODE BLOCKS ── */
+.code-block {
+  background: #060a10;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin: 16px 0;
+  overflow: hidden;
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.copy-btn {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  transition: all 0.2s;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.copy-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+.copy-btn.copied { border-color: var(--green); color: var(--green); }
+
+.code-block pre {
+  padding: 16px;
+  overflow-x: auto;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: #b8cfe0;
+}
+
+.code-block pre .kw { color: var(--cyan); }
+.code-block pre .str { color: var(--green); }
+.code-block pre .cm { color: var(--text-muted); font-style: italic; }
+.code-block pre .num { color: var(--orange); }
+.code-block pre .key { color: var(--purple); }
+
+/* ── ANALOGY BOX ── */
+.analogy-box {
+  background: linear-gradient(135deg, rgba(255,123,58,0.08) 0%, rgba(255,123,58,0.03) 100%);
+  border: 1px solid rgba(255,123,58,0.3);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin: 16px 0;
+  position: relative;
+}
+
+.analogy-tag {
+  position: absolute;
+  top: -1px;
+  left: 16px;
+  transform: translateY(-50%);
+  background: var(--orange);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  letter-spacing: 0.06em;
+}
+
+.analogy-box p {
+  color: #c8a07a !important;
+  font-size: 0.88rem !important;
+  margin-top: 6px;
+}
+
+/* ── INFO BOX ── */
+.info-box {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin: 16px 0;
+  display: flex;
+  gap: 10px;
+  font-size: 0.88rem;
+}
+
+.info-box.tip { background: var(--cyan-dim); border: 1px solid rgba(0,212,255,0.25); color: #7dd4e8; }
+.info-box.warn { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); color: #c8a825; }
+.info-box.note { background: var(--green-dim); border: 1px solid rgba(0,229,160,0.25); color: #5dc9a0; }
+.info-box.important { background: rgba(255,77,106,0.08); border: 1px solid rgba(255,77,106,0.25); color: #d97485; }
+
+.info-box .icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+/* ── TABS ── */
+.tabs { margin: 20px 0; }
+
+.tab-list {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  gap: 0;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  padding: 10px 18px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+.tab-panel { display: none; padding: 20px 0; }
+.tab-panel.active { display: block; }
+
+/* ── GRID LAYOUTS ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 16px 0; }
+
+@media (max-width: 700px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+.card-mini {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+
+.card-mini h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.88rem;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.card-mini p {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  margin: 2px;
+}
+
+.pill-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); }
+.pill-orange { background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(255,123,58,0.3); }
+.pill-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,229,160,0.3); }
+.pill-purple { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(167,139,250,0.3); }
+
+/* ── QUIZ BLOCK ── */
+.quiz-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin: 32px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.quiz-block::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(167,139,250,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.quiz-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quiz-subtitle {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin-bottom: 24px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.quiz-q {
+  margin-bottom: 20px;
+}
+
+.quiz-q-text {
+  font-weight: 500;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quiz-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.88rem;
+}
+
+.quiz-opt:hover { border-color: rgba(255,255,255,0.15); background: var(--bg4); }
+
+.quiz-opt input[type=radio] { display: none; }
+
+.quiz-opt .radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.2s;
+}
+
+.quiz-opt.selected { border-color: var(--cyan); background: var(--cyan-glow); }
+.quiz-opt.selected .radio { border-color: var(--cyan); background: var(--cyan); box-shadow: 0 0 0 3px var(--cyan-dim); }
+.quiz-opt.correct { border-color: var(--green) !important; background: var(--green-dim) !important; }
+.quiz-opt.correct .radio { border-color: var(--green) !important; background: var(--green) !important; }
+.quiz-opt.wrong { border-color: var(--red) !important; background: rgba(255,77,106,0.08) !important; }
+
+.quiz-submit {
+  background: var(--cyan);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 10px 24px;
+  margin-top: 16px;
+  transition: all 0.2s;
+}
+
+.quiz-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+.quiz-submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.quiz-result {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  display: none;
+}
+
+.quiz-result.show { display: block; }
+.quiz-result.pass { background: var(--green-dim); border: 1px solid rgba(0,229,160,0.3); color: var(--green); }
+.quiz-result.fail { background: rgba(255,77,106,0.08); border: 1px solid rgba(255,77,106,0.25); color: var(--red); }
+
+.quiz-score {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+/* ── TABLE ── */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 0.85rem;
+}
+
+.styled-table th {
+  background: var(--bg3);
+  color: var(--text-dim);
+  font-weight: 600;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+
+.styled-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(30,45,66,0.6);
+  color: var(--text-dim);
+}
+
+.styled-table tr:hover td { background: var(--bg3); }
+
+/* ── DIAGRAM ── */
+.diagram-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+.diagram-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  letter-spacing: 0.06em;
+}
+
+/* ── SECTION DIVIDER ── */
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 40px 0;
+}
+
+/* ── COMPLETION BANNER ── */
+.completion-banner {
+  background: linear-gradient(135deg, rgba(0,229,160,0.12) 0%, rgba(0,212,255,0.08) 100%);
+  border: 1px solid rgba(0,229,160,0.3);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-top: 32px;
+  text-align: center;
+  display: none;
+}
+
+.completion-banner.show { display: block; }
+
+.completion-banner .mark-done-btn {
+  background: var(--green);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 10px 24px;
+  margin-top: 10px;
+  transition: all 0.2s;
+}
+
+.mark-done-btn:hover { opacity: 0.85; }
+
+/* ── FINAL CERTIFICATE ── */
+#certificate {
+  text-align: center;
+  padding: 60px 40px;
+  position: relative;
+}
+
+.cert-box {
+  max-width: 600px;
+  margin: 0 auto;
+  border: 2px solid var(--cyan);
+  border-radius: var(--radius);
+  padding: 48px;
+  background: var(--bg2);
+  position: relative;
+  overflow: hidden;
+}
+
+.cert-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, var(--cyan-dim) 0%, transparent 70%);
+}
+
+.cert-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -0.03em;
+  color: var(--cyan);
+  margin-bottom: 8px;
+}
+
+.cert-sub { color: var(--text-dim); margin-bottom: 24px; }
+
+.cert-score {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 3.5rem;
+  color: var(--green);
+  line-height: 1;
+}
+
+.cert-modules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--bg4); }
+
+/* ── MODULE COLOR SCHEMES ── */
+.m-cyan { --module-color: var(--cyan); --module-color-dim: var(--cyan-dim); }
+.m-orange { --module-color: var(--orange); --module-color-dim: var(--orange-dim); }
+.m-green { --module-color: var(--green); --module-color-dim: var(--green-dim); }
+.m-purple { --module-color: var(--purple); --module-color-dim: var(--purple-dim); }
+
+
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  #sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+  #sidebar.open { transform: translateX(0); }
+  #main { margin-left: 0; }
+  #top-bar { padding-left: 60px; }
+  .menu-btn { display: flex !important; }
+}
+
+.menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1100;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+h2.section-head {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  margin: 24px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+h2.section-head::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+ul.feature-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+ul.feature-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+ul.feature-list li::before {
+  content: '▸';
+  color: var(--module-color, var(--cyan));
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.arch-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 16px 0;
+  flex-wrap: nowrap;
+}
+
+.arch-node {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  text-align: center;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+}
+
+.arch-node .icon { font-size: 1.4rem; margin-bottom: 4px; }
+.arch-node .label { color: var(--text-dim); font-size: 0.72rem; }
+
+.arch-arrow {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  padding: 0 8px;
+}
+
+/* Pricing cards */
+.pricing-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.pricing-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+.pricing-card.featured {
+  border-color: var(--cyan);
+  background: var(--cyan-glow);
+}
+
+.pricing-card h4 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.pricing-card .price {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.pricing-card p {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile menu btn -->
+<button class="menu-btn" id="menuBtn" onclick="toggleSidebar()">☰</button>
+
+<!-- TOP BAR -->
+<div id="top-bar">
+  <div class="logo">☁ AWS Cloud Mastery</div>
+  <div id="progress-wrap">
+    <div id="progress-track"><div id="progress-fill"></div></div>
+    <div id="progress-pct">0%</div>
+  </div>
+
+</div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-label">Course Modules</div>
+  <a class="nav-item" href="#hero" onclick="setActive(this)">
+    <div class="nav-num">00</div>
+    <span>Introduction</span>
+    <div class="nav-check">○</div>
+  </a>
+  <a class="nav-item" data-mod="0" href="#mod0" onclick="setActive(this)">
+    <div class="nav-num">01</div>
+    <span>Cloud Computing Basics</span>
+    <div class="nav-check" id="chk0">○</div>
+  </a>
+  <a class="nav-item" data-mod="1" href="#mod1" onclick="setActive(this)">
+    <div class="nav-num">02</div>
+    <span>AWS Global Infrastructure</span>
+    <div class="nav-check" id="chk1">○</div>
+  </a>
+  <a class="nav-item" data-mod="2" href="#mod2" onclick="setActive(this)">
+    <div class="nav-num">03</div>
+    <span>IAM — Identity & Access</span>
+    <div class="nav-check" id="chk2">○</div>
+  </a>
+  <a class="nav-item" data-mod="3" href="#mod3" onclick="setActive(this)">
+    <div class="nav-num">04</div>
+    <span>EC2 — Virtual Servers</span>
+    <div class="nav-check" id="chk3">○</div>
+  </a>
+  <a class="nav-item" data-mod="4" href="#mod4" onclick="setActive(this)">
+    <div class="nav-num">05</div>
+    <span>S3 — Object Storage</span>
+    <div class="nav-check" id="chk4">○</div>
+  </a>
+  <a class="nav-item" data-mod="5" href="#mod5" onclick="setActive(this)">
+    <div class="nav-num">06</div>
+    <span>VPC — Networking</span>
+    <div class="nav-check" id="chk5">○</div>
+  </a>
+  <a class="nav-item" data-mod="6" href="#mod6" onclick="setActive(this)">
+    <div class="nav-num">07</div>
+    <span>RDS & DynamoDB</span>
+    <div class="nav-check" id="chk6">○</div>
+  </a>
+  <a class="nav-item" data-mod="7" href="#mod7" onclick="setActive(this)">
+    <div class="nav-num">08</div>
+    <span>Lambda & Serverless</span>
+    <div class="nav-check" id="chk7">○</div>
+  </a>
+  <a class="nav-item" data-mod="8" href="#mod8" onclick="setActive(this)">
+    <div class="nav-num">09</div>
+    <span>Load Balancing & Scaling</span>
+    <div class="nav-check" id="chk8">○</div>
+  </a>
+  <a class="nav-item" data-mod="9" href="#mod9" onclick="setActive(this)">
+    <div class="nav-num">10</div>
+    <span>CloudFront & Route 53</span>
+    <div class="nav-check" id="chk9">○</div>
+  </a>
+  <a class="nav-item" data-mod="10" href="#mod10" onclick="setActive(this)">
+    <div class="nav-num">11</div>
+    <span>Monitoring & Logging</span>
+    <div class="nav-check" id="chk10">○</div>
+  </a>
+  <a class="nav-item" data-mod="11" href="#mod11" onclick="setActive(this)">
+    <div class="nav-num">12</div>
+    <span>Infrastructure as Code</span>
+    <div class="nav-check" id="chk11">○</div>
+  </a>
+  <a class="nav-item" data-mod="12" href="#mod12" onclick="setActive(this)">
+    <div class="nav-num">13</div>
+    <span>Messaging: SQS & SNS</span>
+    <div class="nav-check" id="chk12">○</div>
+  </a>
+  <a class="nav-item" data-mod="13" href="#mod13" onclick="setActive(this)">
+    <div class="nav-num">14</div>
+    <span>Containers: ECS & EKS</span>
+    <div class="nav-check" id="chk13">○</div>
+  </a>
+  <a class="nav-item" data-mod="14" href="#mod14" onclick="setActive(this)">
+    <div class="nav-num">15</div>
+    <span>Security & Compliance</span>
+    <div class="nav-check" id="chk14">○</div>
+  </a>
+  <a class="nav-item" data-mod="15" href="#mod15" onclick="setActive(this)">
+    <div class="nav-num">16</div>
+    <span>Pricing & Support Plans</span>
+    <div class="nav-check" id="chk15">○</div>
+  </a>
+  <div class="sidebar-label" style="margin-top:12px;">Assessment</div>
+  <a class="nav-item" href="#final-quiz" onclick="setActive(this)">
+    <div class="nav-num">✦</div>
+    <span>Final Quiz & Certificate</span>
+    <div class="nav-check">★</div>
+  </a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section id="hero" class="section" style="max-width:100%;padding:0;">
+  <div id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-badge">☁ Zero to AWS Cloud Technician</div>
+    <h1 class="hero-title">
+      Master <span>Amazon Web Services</span><br>From Scratch
+    </h1>
+    <p class="hero-sub">A fully interactive, beginner-friendly guide covering every core AWS concept with real-world examples, diagrams, and mini-quizzes to test your knowledge.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-n">16</div><div class="stat-l">Core Modules</div></div>
+      <div class="stat"><div class="stat-n">80+</div><div class="stat-l">Concepts</div></div>
+      <div class="stat"><div class="stat-n">40+</div><div class="stat-l">Quiz Questions</div></div>
+      <div class="stat"><div class="stat-n">1</div><div class="stat-l">Certificate</div></div>
+    </div>
+    <div class="cloud-grid">
+      <div class="cloud-service-chip">EC2</div>
+      <div class="cloud-service-chip">S3</div>
+      <div class="cloud-service-chip">Lambda</div>
+      <div class="cloud-service-chip">VPC</div>
+      <div class="cloud-service-chip">IAM</div>
+      <div class="cloud-service-chip">RDS</div>
+      <div class="cloud-service-chip">CloudFront</div>
+      <div class="cloud-service-chip">EKS</div>
+      <div class="cloud-service-chip">SQS</div>
+      <div class="cloud-service-chip">SNS</div>
+      <div class="cloud-service-chip">CloudWatch</div>
+      <div class="cloud-service-chip">Route 53</div>
+    </div>
+    <div class="scroll-hint" onclick="document.getElementById('mod0').scrollIntoView({behavior:'smooth'})">▼ Begin Learning</div>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 0: CLOUD BASICS ═══════════════════ -->
+<section id="mod0" class="section fade-in">
+  <div class="module-header m-cyan">
+    <div class="module-num">01</div>
+    <div class="module-meta">
+      <div class="module-tag">Foundation</div>
+      <div class="module-title">Cloud Computing Basics</div>
+      <div class="module-desc">Understand what the cloud is, why it exists, and why AWS dominates it.</div>
+    </div>
+    <div class="module-icon">☁️</div>
+  </div>
+
+  <h2 class="section-head">What is Cloud Computing?</h2>
+  <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:16px;">Cloud computing is the delivery of computing services — servers, storage, databases, networking, software — over the internet ("the cloud") so you don't have to own or maintain physical hardware.</p>
+
+  <div class="analogy-box">
+    <div class="analogy-tag">💡 ANALOGY</div>
+    <p>Think of cloud computing like electricity. You don't build your own power plant — you just plug in and pay for what you use. AWS is the power company for your apps and data.</p>
+  </div>
+
+  <div class="concept-card" id="cc1">
+    <div class="concept-head" onclick="toggleCard('cc1')">
+      <div class="concept-icon">⚡</div>
+      <div class="concept-name">Benefits of Cloud Computing</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <ul class="feature-list">
+        <li><strong>Trade Capital Expense for Variable Expense</strong> — Instead of buying servers upfront, pay only for what you consume.</li>
+        <li><strong>Massive Economies of Scale</strong> — AWS serves millions of customers, so they can offer lower prices than you could achieve alone.</li>
+        <li><strong>Elasticity</strong> — Scale up during peak traffic (Black Friday), scale down during quiet periods. Pay only for current use.</li>
+        <li><strong>Speed & Agility</strong> — Provision new resources in minutes, not weeks.</li>
+        <li><strong>Global Reach</strong> — Deploy your application worldwide in a few clicks.</li>
+        <li><strong>No Data Center Management</strong> — AWS handles physical security, hardware maintenance, and cooling.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="concept-card" id="cc2">
+    <div class="concept-head" onclick="toggleCard('cc2')">
+      <div class="concept-icon">📦</div>
+      <div class="concept-name">Cloud Service Models: IaaS, PaaS, SaaS</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <div class="grid-3">
+        <div class="card-mini" style="border-color:rgba(0,212,255,0.3);">
+          <h4>🏗️ IaaS</h4>
+          <div style="font-size:0.7rem;color:var(--cyan);margin-bottom:6px;">Infrastructure as a Service</div>
+          <p>You manage OS, runtime, data. AWS provides hardware. <br><strong>Example:</strong> EC2 (virtual machines)</p>
+        </div>
+        <div class="card-mini" style="border-color:rgba(255,123,58,0.3);">
+          <h4>🚀 PaaS</h4>
+          <div style="font-size:0.7rem;color:var(--orange);margin-bottom:6px;">Platform as a Service</div>
+          <p>AWS manages OS + runtime. You manage your code and data. <br><strong>Example:</strong> Elastic Beanstalk, RDS</p>
+        </div>
+        <div class="card-mini" style="border-color:rgba(0,229,160,0.3);">
+          <h4>💻 SaaS</h4>
+          <div style="font-size:0.7rem;color:var(--green);margin-bottom:6px;">Software as a Service</div>
+          <p>You just use the software. Everything managed by provider. <br><strong>Example:</strong> Gmail, Salesforce</p>
+        </div>
+      </div>
+      <div class="info-box tip">
+        <div class="icon">💡</div>
+        <div>Most AWS services are IaaS or PaaS. As an AWS Technician, you'll primarily work with IaaS services like EC2 and PaaS services like RDS.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="cc3">
+    <div class="concept-head" onclick="toggleCard('cc3')">
+      <div class="concept-icon">🌐</div>
+      <div class="concept-name">Deployment Models: Public, Private, Hybrid</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <div class="grid-3">
+        <div class="card-mini">
+          <h4>Public Cloud</h4>
+          <p>Resources owned and operated by a third-party cloud provider (AWS). Everything runs on the provider's hardware. Best for most businesses.</p>
+        </div>
+        <div class="card-mini">
+          <h4>Private Cloud</h4>
+          <p>Cloud resources used exclusively by one organization. Can be on-premises or hosted by a third party. More control, but higher cost.</p>
+        </div>
+        <div class="card-mini">
+          <h4>Hybrid Cloud</h4>
+          <p>A mix of on-premises + public cloud. Data/apps can move between the two. Common in regulated industries (banking, healthcare).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="cc4">
+    <div class="concept-head" onclick="toggleCard('cc4')">
+      <div class="concept-icon">🏆</div>
+      <div class="concept-name">Why AWS? AWS vs Azure vs GCP</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>Amazon Web Services launched in 2006 and is the world's most comprehensive and widely adopted cloud platform. Key advantages:</p>
+      <table class="styled-table">
+        <thead><tr><th>Factor</th><th>AWS</th><th>Azure</th><th>GCP</th></tr></thead>
+        <tbody>
+          <tr><td>Market Share</td><td><span class="pill pill-green">~33%</span></td><td>~23%</td><td>~11%</td></tr>
+          <tr><td>Services</td><td>200+ services</td><td>200+ services</td><td>100+ services</td></tr>
+          <tr><td>Best For</td><td>General workloads</td><td>Microsoft stack</td><td>Data/ML</td></tr>
+          <tr><td>Free Tier</td><td>12 months + always free</td><td>12 months</td><td>$300 credit</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- QUIZ 1 -->
+  <div class="quiz-block" id="quiz0">
+    <div class="quiz-title">🧠 Module Quiz — Cloud Basics</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. Which cloud service model gives you the MOST control over the OS and runtime environment?</div>
+      <div class="quiz-options" data-q="0" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q0"><div class="radio"></div>IaaS (Infrastructure as a Service)</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q0"><div class="radio"></div>PaaS (Platform as a Service)</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q0"><div class="radio"></div>SaaS (Software as a Service)</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q0"><div class="radio"></div>FaaS (Function as a Service)</label>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. A startup wants to avoid large upfront hardware costs and only pay for what they use. Which cloud benefit does this describe?</div>
+      <div class="quiz-options" data-q="1" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1"><div class="radio"></div>Global Reach</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1"><div class="radio"></div>Trade Capital Expense for Variable Expense</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1"><div class="radio"></div>High Availability</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1"><div class="radio"></div>Security Compliance</label>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q3. A bank wants to keep sensitive data on-premises but still use AWS for its public website. Which deployment model is this?</div>
+      <div class="quiz-options" data-q="2" data-ans="2">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2"><div class="radio"></div>Public Cloud</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2"><div class="radio"></div>Private Cloud</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2"><div class="radio"></div>Hybrid Cloud</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2"><div class="radio"></div>Community Cloud</label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz('quiz0', [0,1,2])">Submit Answers</button>
+    <div class="quiz-result" id="quiz0-result"></div>
+  </div>
+
+  <div class="completion-banner" id="done0">
+    <div style="font-size:2rem;margin-bottom:8px;">🎉</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;">Module 1 Complete!</div>
+    <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:8px;">You understand cloud computing fundamentals.</div>
+    <button class="mark-done-btn" onclick="markDone(0)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 1: AWS INFRASTRUCTURE ═══════════════════ -->
+<section id="mod1" class="section fade-in">
+  <div class="module-header m-orange">
+    <div class="module-num">02</div>
+    <div class="module-meta">
+      <div class="module-tag">Infrastructure</div>
+      <div class="module-title">AWS Global Infrastructure</div>
+      <div class="module-desc">Regions, Availability Zones, and Edge Locations — the backbone of AWS.</div>
+    </div>
+    <div class="module-icon">🌍</div>
+  </div>
+
+  <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:20px;">AWS operates a massive global network of data centers organized into a hierarchy: Regions → Availability Zones → Edge Locations.</p>
+
+  <div class="diagram-wrap">
+    <div class="diagram-title">// AWS GLOBAL INFRASTRUCTURE HIERARCHY</div>
+    <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;">
+      <!-- Regions -->
+      <rect x="10" y="20" width="680" height="170" rx="10" fill="none" stroke="#1e2d42" stroke-width="1.5"/>
+      <text x="24" y="38" fill="#7a9ab8" font-family="IBM Plex Mono" font-size="9">🌍 REGION (e.g. us-east-1)</text>
+      <!-- AZ1 -->
+      <rect x="30" y="50" width="185" height="120" rx="8" fill="none" stroke="#00d4ff" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+      <text x="45" y="68" fill="#00d4ff" font-family="IBM Plex Mono" font-size="8">AZ — us-east-1a</text>
+      <rect x="45" y="76" width="70" height="32" rx="5" fill="#141b27" stroke="#1e2d42"/>
+      <text x="72" y="89" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">Data</text>
+      <text x="72" y="100" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">Center 1</text>
+      <rect x="127" y="76" width="70" height="32" rx="5" fill="#141b27" stroke="#1e2d42"/>
+      <text x="160" y="89" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">Data</text>
+      <text x="160" y="100" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">Center 2</text>
+      <rect x="45" y="118" width="150" height="28" rx="5" fill="#0d1117" stroke="#1e2d42"/>
+      <text x="120" y="136" fill="#445c76" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">EC2, S3, RDS ...</text>
+      <!-- AZ2 -->
+      <rect x="255" y="50" width="185" height="120" rx="8" fill="none" stroke="#00d4ff" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+      <text x="270" y="68" fill="#00d4ff" font-family="IBM Plex Mono" font-size="8">AZ — us-east-1b</text>
+      <rect x="270" y="76" width="70" height="32" rx="5" fill="#141b27" stroke="#1e2d42"/>
+      <text x="303" y="96" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">Data Center</text>
+      <rect x="352" y="76" width="70" height="32" rx="5" fill="#141b27" stroke="#1e2d42"/>
+      <text x="385" y="96" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">Data Center</text>
+      <rect x="270" y="118" width="150" height="28" rx="5" fill="#0d1117" stroke="#1e2d42"/>
+      <text x="345" y="136" fill="#445c76" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">EC2, S3, RDS ...</text>
+      <!-- AZ3 -->
+      <rect x="480" y="50" width="185" height="120" rx="8" fill="none" stroke="#00d4ff" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+      <text x="495" y="68" fill="#00d4ff" font-family="IBM Plex Mono" font-size="8">AZ — us-east-1c</text>
+      <rect x="495" y="76" width="70" height="32" rx="5" fill="#141b27" stroke="#1e2d42"/>
+      <text x="528" y="96" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">Data Center</text>
+      <rect x="578" y="76" width="70" height="32" rx="5" fill="#141b27" stroke="#1e2d42"/>
+      <text x="611" y="96" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">Data Center</text>
+      <rect x="495" y="118" width="150" height="28" rx="5" fill="#0d1117" stroke="#1e2d42"/>
+      <text x="570" y="136" fill="#445c76" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">EC2, S3, RDS ...</text>
+      <!-- Arrows between AZs -->
+      <line x1="215" y1="110" x2="255" y2="110" stroke="#1e2d42" stroke-width="1"/>
+      <line x1="440" y1="110" x2="480" y2="110" stroke="#1e2d42" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <div class="concept-card" id="inf1">
+    <div class="concept-head" onclick="toggleCard('inf1')">
+      <div class="concept-icon">🌍</div>
+      <div class="concept-name">Regions</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>A <strong>Region</strong> is a physical geographic location in the world where AWS has clustered data centers. AWS currently has <strong>33+ Regions</strong> globally (e.g., us-east-1, eu-west-1, ap-southeast-1).</p>
+      <h2 class="section-head" style="font-size:0.85rem;margin-top:16px;">How to choose a Region?</h2>
+      <ul class="feature-list">
+        <li><strong>Compliance & Data Residency</strong> — Government regulations may require data to stay in-country.</li>
+        <li><strong>Latency</strong> — Choose the region closest to your end users for fastest response.</li>
+        <li><strong>Service Availability</strong> — New AWS services roll out to us-east-1 first.</li>
+        <li><strong>Pricing</strong> — Costs vary by region (us-east-1 is typically cheapest).</li>
+      </ul>
+      <div class="info-box warn">
+        <div class="icon">⚠️</div>
+        <div><strong>Important:</strong> Resources in one Region are completely isolated from another Region by default. S3 in us-east-1 is separate from S3 in eu-west-1.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="inf2">
+    <div class="concept-head" onclick="toggleCard('inf2')">
+      <div class="concept-icon">🏢</div>
+      <div class="concept-name">Availability Zones (AZs)</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>Each Region has multiple <strong>Availability Zones</strong> (AZs) — usually 3 or more. Each AZ is one or more discrete data centers with redundant power, networking, and connectivity.</p>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>Think of a Region as a city (New York), and AZs as different neighborhoods in that city. If one neighborhood floods, the others are fine. Your app runs in multiple neighborhoods simultaneously.</p>
+      </div>
+      <ul class="feature-list">
+        <li>AZs are physically separated by many kilometers to prevent simultaneous failure.</li>
+        <li>They are connected by high-speed, low-latency private fiber links.</li>
+        <li>Deploying to multiple AZs makes your app <strong>highly available</strong>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="concept-card" id="inf3">
+    <div class="concept-head" onclick="toggleCard('inf3')">
+      <div class="concept-icon">📡</div>
+      <div class="concept-name">Edge Locations & CloudFront</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p><strong>Edge Locations</strong> are mini data centers distributed globally (400+ locations) used to deliver content to end users with low latency. They are used by <strong>Amazon CloudFront</strong> (CDN) and Route 53 (DNS).</p>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>If AWS Regions are warehouses, Edge Locations are the local convenience stores. Instead of ordering from a central warehouse (farther away), you pick up from the store around the corner — faster delivery!</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz1">
+    <div class="quiz-title">🧠 Module Quiz — Global Infrastructure</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. You need to deploy an app with the lowest latency for users in Tokyo. What should you consider first?</div>
+      <div class="quiz-options" data-q="0" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1a"><div class="radio"></div>Choose the ap-northeast-1 (Tokyo) region</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1a"><div class="radio"></div>Choose us-east-1 (Virginia) for lowest cost</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1a"><div class="radio"></div>Use multiple AZs in eu-west-1</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1a"><div class="radio"></div>Deploy to a single availability zone</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. What is the primary purpose of deploying across multiple Availability Zones?</div>
+      <div class="quiz-options" data-q="1" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1b"><div class="radio"></div>To reduce costs significantly</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1b"><div class="radio"></div>To achieve high availability and fault tolerance</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1b"><div class="radio"></div>To increase storage capacity</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q1b"><div class="radio"></div>To comply with GDPR regulations</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz1', [0,1])">Submit Answers</button>
+    <div class="quiz-result" id="quiz1-result"></div>
+  </div>
+  <div class="completion-banner" id="done1">
+    <div style="font-size:2rem;">🌍</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 2 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(1)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 2: IAM ═══════════════════ -->
+<section id="mod2" class="section fade-in">
+  <div class="module-header m-purple">
+    <div class="module-num">03</div>
+    <div class="module-meta">
+      <div class="module-tag">Security</div>
+      <div class="module-title">IAM — Identity & Access Management</div>
+      <div class="module-desc">Control who can do what in your AWS account. The foundation of all AWS security.</div>
+    </div>
+    <div class="module-icon">🔐</div>
+  </div>
+
+  <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:20px;">IAM is a <strong>free</strong> AWS service that enables you to manage access to AWS resources. It's the first thing you configure after creating an AWS account.</p>
+
+  <div class="info-box important">
+    <div class="icon">🚨</div>
+    <div><strong>Critical Rule:</strong> Never use the root account for daily tasks. Create IAM users with only the permissions they need (Principle of Least Privilege).</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab-list">
+      <button class="tab-btn active" onclick="switchTab(this, 'iam-users')">Users</button>
+      <button class="tab-btn" onclick="switchTab(this, 'iam-groups')">Groups</button>
+      <button class="tab-btn" onclick="switchTab(this, 'iam-roles')">Roles</button>
+      <button class="tab-btn" onclick="switchTab(this, 'iam-policies')">Policies</button>
+    </div>
+
+    <div id="iam-users" class="tab-panel active">
+      <h2 class="section-head">IAM Users</h2>
+      <p style="color:var(--text-dim);font-size:0.9rem;">An IAM <strong>User</strong> represents a person or service that interacts with AWS. Each user has:</p>
+      <ul class="feature-list">
+        <li>A unique username within the account</li>
+        <li>A password (for Console access) or Access Keys (for programmatic/CLI access)</li>
+        <li>Permissions attached directly or through groups</li>
+      </ul>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>An IAM User is like an employee badge. Each employee gets their own badge (identity) with specific access doors (permissions) they can open.</p>
+      </div>
+    </div>
+
+    <div id="iam-groups" class="tab-panel">
+      <h2 class="section-head">IAM Groups</h2>
+      <p style="color:var(--text-dim);font-size:0.9rem;">A <strong>Group</strong> is a collection of IAM users. Attach policies to groups to manage permissions at scale.</p>
+      <div class="grid-2">
+        <div class="card-mini">
+          <h4>Example Groups</h4>
+          <p>Developers, Admins, Finance, ReadOnly, DBAdmins</p>
+        </div>
+        <div class="card-mini">
+          <h4>Key Points</h4>
+          <p>A user can belong to multiple groups. Groups cannot be nested inside other groups.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="iam-roles" class="tab-panel">
+      <h2 class="section-head">IAM Roles</h2>
+      <p style="color:var(--text-dim);font-size:0.9rem;">A <strong>Role</strong> is an identity with specific permissions that can be <em>assumed</em> by AWS services, users, or external applications — not tied to a specific person.</p>
+      <ul class="feature-list">
+        <li><strong>EC2 Role</strong> — Lets an EC2 instance access S3 without embedding credentials</li>
+        <li><strong>Lambda Role</strong> — Allows a Lambda function to write to DynamoDB</li>
+        <li><strong>Cross-Account Role</strong> — Let users from Account A access resources in Account B</li>
+      </ul>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>A Role is like a costume. Any actor (service) can wear it temporarily to gain specific abilities, then take it off. The costume defines what you can do, not who you are permanently.</p>
+      </div>
+    </div>
+
+    <div id="iam-policies" class="tab-panel">
+      <h2 class="section-head">IAM Policies</h2>
+      <p style="color:var(--text-dim);font-size:0.9rem;">A <strong>Policy</strong> is a JSON document defining what actions are allowed or denied on which resources.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>IAM Policy — Allow S3 Read Access</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>{
+  <span class="key">"Version"</span>: <span class="str">"2012-10-17"</span>,
+  <span class="key">"Statement"</span>: [
+    {
+      <span class="key">"Effect"</span>: <span class="str">"Allow"</span>,     <span class="cm">// Allow or Deny</span>
+      <span class="key">"Action"</span>: [
+        <span class="str">"s3:GetObject"</span>,
+        <span class="str">"s3:ListBucket"</span>
+      ],
+      <span class="key">"Resource"</span>: [
+        <span class="str">"arn:aws:s3:::my-bucket"</span>,
+        <span class="str">"arn:aws:s3:::my-bucket/*"</span>
+      ]
+    }
+  ]
+}</pre>
+      </div>
+      <div class="info-box tip">
+        <div class="icon">💡</div>
+        <div>Policy evaluation: <strong>Deny wins</strong>. If any policy denies an action, it's denied even if another allows it. Default is deny — you must explicitly grant access.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="iam4">
+    <div class="concept-head" onclick="toggleCard('iam4')">
+      <div class="concept-icon">🔑</div>
+      <div class="concept-name">MFA — Multi-Factor Authentication</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>MFA adds a second layer of security on top of username and password. Even if your password is stolen, the attacker can't log in without your MFA device.</p>
+      <ul class="feature-list">
+        <li><strong>Virtual MFA</strong> — Google Authenticator, Authy (time-based OTP)</li>
+        <li><strong>Hardware MFA</strong> — Physical device (YubiKey)</li>
+        <li><strong>Best Practice:</strong> Enable MFA on the root account AND all admin IAM users</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="concept-card" id="iam5">
+    <div class="concept-head" onclick="toggleCard('iam5')">
+      <div class="concept-icon">🪪</div>
+      <div class="concept-name">Root Account vs IAM User</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <table class="styled-table">
+        <thead><tr><th>Feature</th><th>Root Account</th><th>IAM User</th></tr></thead>
+        <tbody>
+          <tr><td>Created when</td><td>Account creation</td><td>Manually by admin</td></tr>
+          <tr><td>Access level</td><td>Unlimited (God mode)</td><td>As defined by policy</td></tr>
+          <tr><td>For daily use?</td><td><span class="pill pill-orange">NO ❌</span></td><td><span class="pill pill-green">YES ✓</span></td></tr>
+          <tr><td>Use cases</td><td>Billing, close account</td><td>All daily operations</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz2">
+    <div class="quiz-title">🧠 Module Quiz — IAM</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. An EC2 instance needs to read files from an S3 bucket. What is the best practice to grant this access?</div>
+      <div class="quiz-options" data-q="0" data-ans="2">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2a"><div class="radio"></div>Store AWS access keys in the EC2 instance's code</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2a"><div class="radio"></div>Use the root account credentials</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2a"><div class="radio"></div>Attach an IAM Role with S3 read permissions to the EC2 instance</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2a"><div class="radio"></div>Create a Group with S3 access</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. What does the "Effect": "Deny" in an IAM policy mean?</div>
+      <div class="quiz-options" data-q="1" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2b"><div class="radio"></div>The action is explicitly blocked, and Deny always overrides Allow</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2b"><div class="radio"></div>The action is allowed unless another policy blocks it</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2b"><div class="radio"></div>The action is pending approval</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2b"><div class="radio"></div>The policy is disabled</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q3. You have 50 developers who all need the same AWS permissions. What is the most efficient approach?</div>
+      <div class="quiz-options" data-q="2" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2c"><div class="radio"></div>Attach the same policy to each of the 50 IAM users individually</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2c"><div class="radio"></div>Create a "Developers" IAM Group, attach the policy to the group, add all users</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2c"><div class="radio"></div>Create one shared IAM User for all developers</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q2c"><div class="radio"></div>Use the root account</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz2', [2,0,1])">Submit Answers</button>
+    <div class="quiz-result" id="quiz2-result"></div>
+  </div>
+  <div class="completion-banner" id="done2">
+    <div style="font-size:2rem;">🔐</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 3 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(2)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 3: EC2 ═══════════════════ -->
+<section id="mod3" class="section fade-in">
+  <div class="module-header m-cyan">
+    <div class="module-num">04</div>
+    <div class="module-meta">
+      <div class="module-tag">Compute</div>
+      <div class="module-title">EC2 — Elastic Compute Cloud</div>
+      <div class="module-desc">Virtual servers in the cloud. The most fundamental AWS compute service.</div>
+    </div>
+    <div class="module-icon">🖥️</div>
+  </div>
+
+  <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:20px;">EC2 provides resizable virtual servers (instances) in the cloud. You choose the OS, size, and configuration — and start running applications in minutes.</p>
+
+  <div class="analogy-box">
+    <div class="analogy-tag">💡 ANALOGY</div>
+    <p>EC2 is like renting a computer in a data center. You tell AWS: "I want a computer with 8 CPUs, 32GB RAM, running Linux" — and it's ready in 60 seconds. You pay by the hour. Done? Turn it off.</p>
+  </div>
+
+  <div class="concept-card" id="ec2-1">
+    <div class="concept-head" onclick="toggleCard('ec2-1')">
+      <div class="concept-icon">📊</div>
+      <div class="concept-name">EC2 Instance Types & Families</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>Instance types define the hardware (CPU, memory, network). Named like <code style="color:var(--cyan);font-family:'IBM Plex Mono'">t3.micro</code> (family + generation + size).</p>
+      <table class="styled-table">
+        <thead><tr><th>Family</th><th>Optimized For</th><th>Example Types</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill pill-cyan">T</span></td><td>General Purpose (burstable)</td><td>t3.micro, t4g.medium</td><td>Web servers, dev/test</td></tr>
+          <tr><td><span class="pill pill-cyan">M</span></td><td>General Purpose (balanced)</td><td>m6i.large, m7g.xlarge</td><td>App servers, databases</td></tr>
+          <tr><td><span class="pill pill-orange">C</span></td><td>Compute Optimized</td><td>c6i.4xlarge</td><td>HPC, gaming, ML inference</td></tr>
+          <tr><td><span class="pill pill-purple">R</span></td><td>Memory Optimized</td><td>r6i.2xlarge</td><td>Big databases, Redis</td></tr>
+          <tr><td><span class="pill pill-green">P, G</span></td><td>GPU/Accelerated</td><td>p3.2xlarge, g5.xlarge</td><td>ML training, video rendering</td></tr>
+          <tr><td><span class="pill pill-cyan">I</span></td><td>Storage Optimized</td><td>i3.xlarge</td><td>NoSQL, data warehousing</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept-card" id="ec2-2">
+    <div class="concept-head" onclick="toggleCard('ec2-2')">
+      <div class="concept-icon">💰</div>
+      <div class="concept-name">EC2 Pricing Models</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <div class="pricing-cards">
+        <div class="pricing-card">
+          <h4>🕐 On-Demand</h4>
+          <div class="price">Pay per second/hour</div>
+          <p>No commitment. Launch and terminate anytime. Most flexible but most expensive. Best for unpredictable workloads.</p>
+        </div>
+        <div class="pricing-card featured">
+          <h4>📝 Reserved Instances</h4>
+          <div class="price">1 or 3 year commitment</div>
+          <p>Up to <strong>72% discount</strong> vs On-Demand. Best for steady-state workloads (production databases, app servers).</p>
+        </div>
+        <div class="pricing-card">
+          <h4>⚡ Spot Instances</h4>
+          <div class="price">Up to 90% discount</div>
+          <p>Use spare AWS capacity. Can be interrupted with 2-min notice. Best for batch jobs, ML training, fault-tolerant apps.</p>
+        </div>
+        <div class="pricing-card">
+          <h4>🏠 Dedicated Hosts</h4>
+          <div class="price">Per host billing</div>
+          <p>Physical server dedicated to you. Required for compliance or software licensing. Most expensive.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="ec2-3">
+    <div class="concept-head" onclick="toggleCard('ec2-3')">
+      <div class="concept-icon">🛡️</div>
+      <div class="concept-name">Security Groups</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>Security Groups are <strong>virtual firewalls</strong> for EC2 instances. They control inbound and outbound traffic at the instance level.</p>
+      <ul class="feature-list">
+        <li>All inbound traffic is <strong>denied by default</strong> — you must add rules to allow it.</li>
+        <li>All outbound traffic is <strong>allowed by default</strong>.</li>
+        <li>Rules are stateful — if you allow inbound, the response outbound is automatically allowed.</li>
+        <li>You can reference other Security Groups in rules (not just IP addresses).</li>
+      </ul>
+      <div class="code-block">
+        <div class="code-header"><span>Security Group Example — Web Server</span></div>
+        <pre><span class="cm">// INBOUND RULES</span>
+Port <span class="num">80</span>   (HTTP)  — Source: <span class="str">0.0.0.0/0</span>     <span class="cm">// Anyone</span>
+Port <span class="num">443</span>  (HTTPS) — Source: <span class="str">0.0.0.0/0</span>     <span class="cm">// Anyone</span>
+Port <span class="num">22</span>   (SSH)   — Source: <span class="str">10.0.0.5/32</span>   <span class="cm">// Only your IP</span>
+
+<span class="cm">// OUTBOUND RULES</span>
+All traffic — Destination: <span class="str">0.0.0.0/0</span>        <span class="cm">// All outbound allowed</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="ec2-4">
+    <div class="concept-head" onclick="toggleCard('ec2-4')">
+      <div class="concept-icon">💾</div>
+      <div class="concept-name">EBS — Elastic Block Store (EC2 Storage)</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>EBS provides persistent block storage volumes for EC2 instances — like a hard drive you attach to your virtual machine.</p>
+      <div class="grid-2">
+        <div class="card-mini">
+          <h4>gp3 / gp2 (SSD)</h4>
+          <p>General purpose. Best for most workloads, boot volumes, databases.</p>
+        </div>
+        <div class="card-mini">
+          <h4>io1 / io2 (SSD)</h4>
+          <p>Provisioned IOPS. High-performance databases requiring consistent low-latency I/O.</p>
+        </div>
+        <div class="card-mini">
+          <h4>st1 (HDD)</h4>
+          <p>Throughput-optimized. Big data, data warehouses, log processing.</p>
+        </div>
+        <div class="card-mini">
+          <h4>sc1 (HDD)</h4>
+          <p>Cold HDD. Infrequently accessed data. Lowest cost EBS option.</p>
+        </div>
+      </div>
+      <div class="info-box note">
+        <div class="icon">✅</div>
+        <div>EBS volumes are tied to one AZ. They persist even after the EC2 instance is stopped/terminated (unless "Delete on Termination" is checked). You can create snapshots to S3 for backups.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="ec2-5">
+    <div class="concept-head" onclick="toggleCard('ec2-5')">
+      <div class="concept-icon">📸</div>
+      <div class="concept-name">AMI — Amazon Machine Image</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>An <strong>AMI</strong> is a template/snapshot used to launch an EC2 instance. It includes the OS, pre-installed software, and configuration.</p>
+      <ul class="feature-list">
+        <li><strong>AWS Managed AMIs</strong> — Amazon Linux 2, Ubuntu, Windows Server</li>
+        <li><strong>Community AMIs</strong> — Shared by other AWS users</li>
+        <li><strong>Custom AMIs</strong> — You create your own from a configured instance</li>
+        <li><strong>AWS Marketplace AMIs</strong> — Commercial software (e.g., Cisco, Palo Alto)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz3">
+    <div class="quiz-title">🧠 Module Quiz — EC2</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. Your app runs for 3 years without interruption. Which EC2 pricing model gives the BEST discount?</div>
+      <div class="quiz-options" data-q="0" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3a"><div class="radio"></div>On-Demand — maximum flexibility</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3a"><div class="radio"></div>Reserved Instances (3-year) — up to 72% off</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3a"><div class="radio"></div>Spot Instances — cheapest but can be interrupted</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3a"><div class="radio"></div>Dedicated Hosts — physical servers</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. By default, what happens to inbound traffic on a new Security Group?</div>
+      <div class="quiz-options" data-q="1" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3b"><div class="radio"></div>All inbound traffic is DENIED</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3b"><div class="radio"></div>All inbound traffic is ALLOWED</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3b"><div class="radio"></div>Only HTTP/HTTPS traffic is allowed</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3b"><div class="radio"></div>Only traffic from the same VPC is allowed</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q3. Which EC2 instance family is best for a machine learning training job?</div>
+      <div class="quiz-options" data-q="2" data-ans="3">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3c"><div class="radio"></div>T family — general purpose burstable</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3c"><div class="radio"></div>R family — memory optimized</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3c"><div class="radio"></div>C family — compute optimized</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q3c"><div class="radio"></div>P/G family — GPU accelerated</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz3', [1,0,3])">Submit Answers</button>
+    <div class="quiz-result" id="quiz3-result"></div>
+  </div>
+  <div class="completion-banner" id="done3">
+    <div style="font-size:2rem;">🖥️</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 4 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(3)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 4: S3 ═══════════════════ -->
+<section id="mod4" class="section fade-in">
+  <div class="module-header m-green">
+    <div class="module-num">05</div>
+    <div class="module-meta">
+      <div class="module-tag">Storage</div>
+      <div class="module-title">S3 — Simple Storage Service</div>
+      <div class="module-desc">Unlimited, durable, scalable object storage. Store anything, anywhere.</div>
+    </div>
+    <div class="module-icon">🪣</div>
+  </div>
+
+  <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:20px;">S3 is one of AWS's most used services. It stores <strong>objects</strong> (files) in <strong>buckets</strong> (containers). Infinitely scalable, 99.999999999% (11 9s) durability.</p>
+
+  <div class="analogy-box">
+    <div class="analogy-tag">💡 ANALOGY</div>
+    <p>S3 is like a giant Google Drive for developers. A bucket is like a folder. Objects are files. Unlike a hard drive, it never fills up, never breaks, and can be accessed by millions of users simultaneously.</p>
+  </div>
+
+  <div class="concept-card" id="s3-1">
+    <div class="concept-head" onclick="toggleCard('s3-1')">
+      <div class="concept-icon">🪣</div>
+      <div class="concept-name">Buckets & Objects</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <ul class="feature-list">
+        <li>Bucket names are <strong>globally unique</strong> across all AWS accounts.</li>
+        <li>Objects can be up to <strong>5TB</strong> in size. Use Multipart Upload for files &gt;100MB.</li>
+        <li>Objects have a <strong>key</strong> (path), <strong>value</strong> (content), and <strong>metadata</strong>.</li>
+        <li>Accessed via URL: <code style="color:var(--cyan);font-family:'IBM Plex Mono'">https://my-bucket.s3.amazonaws.com/images/photo.jpg</code></li>
+      </ul>
+      <div class="info-box tip">
+        <div class="icon">💡</div>
+        <div>S3 is <strong>not</strong> a traditional file system — it has no folders. The "/" in "images/photo.jpg" is part of the key name, but the console shows it as a folder visually.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="s3-2">
+    <div class="concept-head" onclick="toggleCard('s3-2')">
+      <div class="concept-icon">📁</div>
+      <div class="concept-name">S3 Storage Classes</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <table class="styled-table">
+        <thead><tr><th>Storage Class</th><th>Access Pattern</th><th>Availability</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill pill-cyan">S3 Standard</span></td><td>Frequent</td><td>99.99%</td><td>Websites, apps, CDN content</td></tr>
+          <tr><td><span class="pill pill-cyan">S3 Intelligent-Tiering</span></td><td>Unknown</td><td>99.9%</td><td>Unpredictable access patterns</td></tr>
+          <tr><td><span class="pill pill-orange">S3 Standard-IA</span></td><td>Infrequent</td><td>99.9%</td><td>Backups, DR files</td></tr>
+          <tr><td><span class="pill pill-orange">S3 One Zone-IA</span></td><td>Infrequent</td><td>99.5%</td><td>Recreatable data, cheaper</td></tr>
+          <tr><td><span class="pill pill-purple">S3 Glacier Instant</span></td><td>Rare (ms retrieval)</td><td>99.9%</td><td>Archive with instant access</td></tr>
+          <tr><td><span class="pill pill-purple">S3 Glacier Flexible</span></td><td>Rare (minutes)</td><td>99.9%</td><td>Long-term archive</td></tr>
+          <tr><td><span class="pill pill-purple">S3 Glacier Deep Archive</span></td><td>Very rare (hours)</td><td>99.9%</td><td>7-10 year compliance archive</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept-card" id="s3-3">
+    <div class="concept-head" onclick="toggleCard('s3-3')">
+      <div class="concept-icon">🔒</div>
+      <div class="concept-name">S3 Security & Access Control</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>By default, S3 buckets are <strong>private</strong>. You control access with:</p>
+      <ul class="feature-list">
+        <li><strong>Bucket Policies</strong> — JSON-based policies at the bucket level (resource-based)</li>
+        <li><strong>IAM Policies</strong> — Attached to IAM users/roles (identity-based)</li>
+        <li><strong>ACLs</strong> — Legacy, per-object access control (mostly disabled now)</li>
+        <li><strong>Block Public Access</strong> — Account-level switch to prevent any public access</li>
+        <li><strong>S3 Encryption</strong> — SSE-S3, SSE-KMS, SSE-C, Client-Side Encryption</li>
+      </ul>
+      <div class="code-block">
+        <div class="code-header"><span>Bucket Policy — Public Read for Static Website</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>{
+  <span class="key">"Version"</span>: <span class="str">"2012-10-17"</span>,
+  <span class="key">"Statement"</span>: [{
+    <span class="key">"Effect"</span>: <span class="str">"Allow"</span>,
+    <span class="key">"Principal"</span>: <span class="str">"*"</span>,         <span class="cm">// Anyone (public)</span>
+    <span class="key">"Action"</span>: <span class="str">"s3:GetObject"</span>,
+    <span class="key">"Resource"</span>: <span class="str">"arn:aws:s3:::my-website/*"</span>
+  }]
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="s3-4">
+    <div class="concept-head" onclick="toggleCard('s3-4')">
+      <div class="concept-icon">🌐</div>
+      <div class="concept-name">S3 Static Website Hosting</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>S3 can host a static website (HTML, CSS, JS — no server-side code). Enable it in bucket settings and get a URL like:</p>
+      <code style="color:var(--cyan);font-family:'IBM Plex Mono';font-size:0.82rem;">http://my-bucket.s3-website-us-east-1.amazonaws.com</code>
+      <div class="info-box note">
+        <div class="icon">✅</div>
+        <div>Combine S3 static hosting with CloudFront CDN + Route 53 custom domain for a production-ready, serverless website at minimal cost.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz4">
+    <div class="quiz-title">🧠 Module Quiz — S3</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. Your company needs to store compliance documents for 7 years that are rarely accessed. Which storage class is most cost-effective?</div>
+      <div class="quiz-options" data-q="0" data-ans="2">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q4a"><div class="radio"></div>S3 Standard — always ready</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q4a"><div class="radio"></div>S3 Standard-IA — infrequent access</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q4a"><div class="radio"></div>S3 Glacier Deep Archive — cheapest long-term</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q4a"><div class="radio"></div>S3 Intelligent-Tiering</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. What is the maximum size of a single S3 object?</div>
+      <div class="quiz-options" data-q="1" data-ans="2">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q4b"><div class="radio"></div>1 TB</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q4b"><div class="radio"></div>2 TB</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q4b"><div class="radio"></div>5 TB</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q4b"><div class="radio"></div>Unlimited</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz4', [2,2])">Submit Answers</button>
+    <div class="quiz-result" id="quiz4-result"></div>
+  </div>
+  <div class="completion-banner" id="done4">
+    <div style="font-size:2rem;">🪣</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 5 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(4)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 5: VPC ═══════════════════ -->
+<section id="mod5" class="section fade-in">
+  <div class="module-header m-orange">
+    <div class="module-num">06</div>
+    <div class="module-meta">
+      <div class="module-tag">Networking</div>
+      <div class="module-title">VPC — Virtual Private Cloud</div>
+      <div class="module-desc">Your own isolated network inside AWS. The foundation of all networking.</div>
+    </div>
+    <div class="module-icon">🌐</div>
+  </div>
+
+  <div class="analogy-box">
+    <div class="analogy-tag">💡 ANALOGY</div>
+    <p>A VPC is like buying a plot of land in the cloud. You decide how to divide it (subnets), build roads (route tables), install a fence (security groups, NACLs), and add a gate (Internet Gateway) for outside access.</p>
+  </div>
+
+  <div class="diagram-wrap">
+    <div class="diagram-title">// VPC ARCHITECTURE OVERVIEW</div>
+    <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;">
+      <!-- Internet -->
+      <ellipse cx="350" cy="25" rx="60" ry="16" fill="#0d1117" stroke="#1e2d42"/>
+      <text x="350" y="29" fill="#7a9ab8" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">🌐 Internet</text>
+      <!-- IGW -->
+      <rect x="310" y="50" width="80" height="24" rx="5" fill="#1a2335" stroke="#00d4ff" stroke-width="1"/>
+      <text x="350" y="66" fill="#00d4ff" font-family="IBM Plex Mono" font-size="8" text-anchor="middle">Internet Gateway</text>
+      <line x1="350" y1="41" x2="350" y2="50" stroke="#1e2d42"/>
+      <!-- VPC -->
+      <rect x="20" y="85" width="660" height="200" rx="10" fill="none" stroke="#ff7b3a" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="36" y="100" fill="#ff7b3a" font-family="IBM Plex Mono" font-size="9">VPC — 10.0.0.0/16</text>
+      <line x1="350" y1="74" x2="350" y2="85" stroke="#1e2d42"/>
+      <!-- Route Table line -->
+      <rect x="300" y="100" width="100" height="20" rx="4" fill="#141b27" stroke="#1e2d42"/>
+      <text x="350" y="113" fill="#445c76" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">Route Table</text>
+      <!-- Public Subnet -->
+      <rect x="40" y="130" width="270" height="130" rx="8" fill="none" stroke="#00d4ff" stroke-width="1"/>
+      <text x="55" y="148" fill="#00d4ff" font-family="IBM Plex Mono" font-size="8">Public Subnet 10.0.1.0/24</text>
+      <rect x="60" y="158" width="90" height="40" rx="5" fill="#141b27" stroke="#1e2d42"/>
+      <text x="105" y="175" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">EC2 Instance</text>
+      <text x="105" y="188" fill="#445c76" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">10.0.1.10</text>
+      <rect x="175" y="158" width="90" height="40" rx="5" fill="#141b27" stroke="#1e2d42"/>
+      <text x="220" y="175" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">Load Balancer</text>
+      <text x="220" y="188" fill="#445c76" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">10.0.1.20</text>
+      <text x="175" y="242" fill="#445c76" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">Has route to Internet GW</text>
+      <!-- Private Subnet -->
+      <rect x="390" y="130" width="270" height="130" rx="8" fill="none" stroke="#a78bfa" stroke-width="1"/>
+      <text x="405" y="148" fill="#a78bfa" font-family="IBM Plex Mono" font-size="8">Private Subnet 10.0.2.0/24</text>
+      <rect x="410" y="158" width="90" height="40" rx="5" fill="#141b27" stroke="#1e2d42"/>
+      <text x="455" y="175" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">RDS Database</text>
+      <text x="455" y="188" fill="#445c76" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">10.0.2.10</text>
+      <rect x="525" y="158" width="90" height="40" rx="5" fill="#141b27" stroke="#1e2d42"/>
+      <text x="570" y="175" fill="#b8cfe0" font-family="IBM Plex Mono" font-size="7.5" text-anchor="middle">App Server</text>
+      <text x="570" y="188" fill="#445c76" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">10.0.2.20</text>
+      <text x="525" y="242" fill="#445c76" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">No direct internet access</text>
+      <!-- Arrow between subnets -->
+      <line x1="310" y1="178" x2="390" y2="178" stroke="#1e2d42" stroke-dasharray="3,2"/>
+      <text x="350" y="174" fill="#445c76" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">internal</text>
+    </svg>
+  </div>
+
+  <div class="concept-card" id="vpc-1">
+    <div class="concept-head" onclick="toggleCard('vpc-1')">
+      <div class="concept-icon">🔲</div>
+      <div class="concept-name">Subnets — Public vs Private</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <div class="grid-2">
+        <div class="card-mini" style="border-color:rgba(0,212,255,0.3);">
+          <h4>🟦 Public Subnet</h4>
+          <p>Has a route to the Internet Gateway. Resources here get public IP addresses and can be reached from the internet. Used for: Web servers, Load Balancers, Bastion hosts.</p>
+        </div>
+        <div class="card-mini" style="border-color:rgba(167,139,250,0.3);">
+          <h4>🟪 Private Subnet</h4>
+          <p>No direct route to the internet. Resources are NOT publicly accessible. Used for: Databases, Application servers, internal microservices.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="vpc-2">
+    <div class="concept-head" onclick="toggleCard('vpc-2')">
+      <div class="concept-icon">🛤️</div>
+      <div class="concept-name">Route Tables, IGW, NAT Gateway</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <ul class="feature-list">
+        <li><strong>Internet Gateway (IGW)</strong> — Allows internet access for public subnets. One per VPC.</li>
+        <li><strong>Route Table</strong> — Rules that determine where network traffic goes. Public subnet routes: <code style="color:var(--cyan);font-family:'IBM Plex Mono'">0.0.0.0/0 → IGW</code></li>
+        <li><strong>NAT Gateway</strong> — Allows private subnet instances to access the internet (for updates) WITHOUT being exposed to inbound internet traffic. Lives in a public subnet.</li>
+        <li><strong>VPC Peering</strong> — Connect two VPCs privately, even across accounts or regions.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="concept-card" id="vpc-3">
+    <div class="concept-head" onclick="toggleCard('vpc-3')">
+      <div class="concept-icon">🛡️</div>
+      <div class="concept-name">NACLs vs Security Groups</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <table class="styled-table">
+        <thead><tr><th>Feature</th><th>Security Group</th><th>NACL</th></tr></thead>
+        <tbody>
+          <tr><td>Level</td><td>Instance level</td><td>Subnet level</td></tr>
+          <tr><td>Stateful?</td><td>Yes — responses auto-allowed</td><td>No — must allow both directions</td></tr>
+          <tr><td>Allow/Deny rules</td><td>Allow only</td><td>Both Allow and Deny</td></tr>
+          <tr><td>Rule evaluation</td><td>All rules evaluated</td><td>Rules evaluated in order (#)</td></tr>
+          <tr><td>Default</td><td>Deny all in, Allow all out</td><td>Allow all in/out</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz5">
+    <div class="quiz-title">🧠 Module Quiz — VPC</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. Your database in a private subnet needs to download security updates from the internet. What do you use?</div>
+      <div class="quiz-options" data-q="0" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q5a"><div class="radio"></div>Internet Gateway directly in the private subnet</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q5a"><div class="radio"></div>NAT Gateway (in public subnet, route private → NAT → IGW)</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q5a"><div class="radio"></div>Give the database a public IP address</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q5a"><div class="radio"></div>VPC Peering to a public VPC</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. Security Groups are STATEFUL. What does this mean?</div>
+      <div class="quiz-options" data-q="1" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q5b"><div class="radio"></div>If you allow inbound traffic, the return response is automatically allowed outbound</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q5b"><div class="radio"></div>Security Groups remember past security events</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q5b"><div class="radio"></div>Security Groups require manual setup of both inbound and outbound rules</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q5b"><div class="radio"></div>Security Groups apply only to stateful applications</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz5', [1,0])">Submit Answers</button>
+    <div class="quiz-result" id="quiz5-result"></div>
+  </div>
+  <div class="completion-banner" id="done5">
+    <div style="font-size:2rem;">🌐</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 6 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(5)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 6: RDS & DYNAMODB ═══════════════════ -->
+<section id="mod6" class="section fade-in">
+  <div class="module-header m-purple">
+    <div class="module-num">07</div>
+    <div class="module-meta">
+      <div class="module-tag">Databases</div>
+      <div class="module-title">RDS & DynamoDB — Databases on AWS</div>
+      <div class="module-desc">Managed relational and NoSQL databases. Store your application data.</div>
+    </div>
+    <div class="module-icon">🗄️</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab-list">
+      <button class="tab-btn active" onclick="switchTab(this, 'db-rds')">RDS (SQL)</button>
+      <button class="tab-btn" onclick="switchTab(this, 'db-dynamo')">DynamoDB (NoSQL)</button>
+      <button class="tab-btn" onclick="switchTab(this, 'db-aurora')">Aurora</button>
+      <button class="tab-btn" onclick="switchTab(this, 'db-cache')">ElastiCache</button>
+    </div>
+
+    <div id="db-rds" class="tab-panel active">
+      <h2 class="section-head">Amazon RDS — Relational Database Service</h2>
+      <p style="color:var(--text-dim);font-size:0.9rem;">RDS is a managed service for relational databases. AWS handles provisioning, patching, backup, and replication — you just manage your data.</p>
+      <div class="grid-2">
+        <div>
+          <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:10px;"><strong>Supported Engines:</strong></p>
+          <ul class="feature-list">
+            <li>MySQL / MariaDB</li>
+            <li>PostgreSQL</li>
+            <li>Oracle Database</li>
+            <li>Microsoft SQL Server</li>
+            <li>Amazon Aurora (MySQL/PostgreSQL compatible)</li>
+          </ul>
+        </div>
+        <div>
+          <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:10px;"><strong>Key Features:</strong></p>
+          <ul class="feature-list">
+            <li>Automated backups (up to 35 days retention)</li>
+            <li>Multi-AZ deployment for high availability</li>
+            <li>Read Replicas for read scaling (up to 15)</li>
+            <li>Automatic storage scaling</li>
+          </ul>
+        </div>
+      </div>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>Running RDS vs setting up your own database is like hiring a full-time DBA (RDS) vs managing the database yourself. AWS handles all the maintenance work — you focus on queries.</p>
+      </div>
+    </div>
+
+    <div id="db-dynamo" class="tab-panel">
+      <h2 class="section-head">Amazon DynamoDB — NoSQL Database</h2>
+      <p style="color:var(--text-dim);font-size:0.9rem;">DynamoDB is a fully managed, serverless <strong>key-value and document</strong> NoSQL database designed for single-digit millisecond performance at any scale.</p>
+      <ul class="feature-list">
+        <li>No servers to manage — AWS handles everything</li>
+        <li>Auto-scales from 0 to millions of requests/second</li>
+        <li>Stores items (rows) in tables with a <strong>Partition Key</strong> (required) and optional <strong>Sort Key</strong></li>
+        <li>Flexible schema — each item can have different attributes</li>
+        <li><strong>DynamoDB Streams</strong> — React to changes (like CDC) with Lambda</li>
+        <li><strong>Global Tables</strong> — Multi-region, active-active replication</li>
+      </ul>
+      <div class="grid-2">
+        <div class="card-mini">
+          <h4>Use DynamoDB for:</h4>
+          <p>Gaming leaderboards, shopping carts, session storage, IoT data, serverless apps</p>
+        </div>
+        <div class="card-mini">
+          <h4>NOT good for:</h4>
+          <p>Complex joins, transactions across many tables, ACID compliance at scale (use RDS)</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="db-aurora" class="tab-panel">
+      <h2 class="section-head">Amazon Aurora</h2>
+      <p style="color:var(--text-dim);font-size:0.9rem;">Aurora is AWS's own cloud-native database, compatible with MySQL and PostgreSQL but <strong>5x faster than MySQL and 3x faster than PostgreSQL</strong>.</p>
+      <ul class="feature-list">
+        <li>Storage auto-grows in 10GB increments up to 128TB</li>
+        <li>6 copies of data across 3 AZs automatically</li>
+        <li>Up to 15 read replicas with minimal lag</li>
+        <li><strong>Aurora Serverless</strong> — Auto-starts/stops and scales capacity based on demand</li>
+        <li>Best choice for new high-performance applications</li>
+      </ul>
+    </div>
+
+    <div id="db-cache" class="tab-panel">
+      <h2 class="section-head">Amazon ElastiCache</h2>
+      <p style="color:var(--text-dim);font-size:0.9rem;">ElastiCache is a fully managed in-memory caching service. Use it to dramatically speed up database-heavy applications.</p>
+      <div class="grid-2">
+        <div class="card-mini" style="border-color:rgba(255,123,58,0.3);">
+          <h4>Redis</h4>
+          <p>Rich data structures (lists, sets, sorted sets). Persistence. Pub/Sub. Best for session storage, leaderboards, real-time analytics.</p>
+        </div>
+        <div class="card-mini">
+          <h4>Memcached</h4>
+          <p>Simple key-value. Multi-threaded. Auto-discovery. Best for simple object caching when you need raw speed.</p>
+        </div>
+      </div>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>ElastiCache is your app's short-term memory. Instead of repeatedly asking the database (hard drive) for the same information, you remember it in RAM — instant recall.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz6">
+    <div class="quiz-title">🧠 Module Quiz — Databases</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. You're building a serverless app with unpredictable traffic that needs a database with millisecond responses. Best choice?</div>
+      <div class="quiz-options" data-q="0" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q6a"><div class="radio"></div>RDS MySQL on a large instance</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q6a"><div class="radio"></div>DynamoDB — serverless NoSQL with auto-scaling</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q6a"><div class="radio"></div>ElastiCache Redis only</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q6a"><div class="radio"></div>Aurora Multi-AZ</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. What is the purpose of RDS Read Replicas?</div>
+      <div class="quiz-options" data-q="1" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q6b"><div class="radio"></div>Scale read-heavy workloads and reduce load on the primary database</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q6b"><div class="radio"></div>Provide automatic failover if the primary DB fails</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q6b"><div class="radio"></div>Store database backups</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q6b"><div class="radio"></div>Encrypt database data at rest</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz6', [1,0])">Submit Answers</button>
+    <div class="quiz-result" id="quiz6-result"></div>
+  </div>
+  <div class="completion-banner" id="done6">
+    <div style="font-size:2rem;">🗄️</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 7 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(6)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 7: LAMBDA & SERVERLESS ═══════════════════ -->
+<section id="mod7" class="section fade-in">
+  <div class="module-header m-cyan">
+    <div class="module-num">08</div>
+    <div class="module-meta">
+      <div class="module-tag">Serverless Compute</div>
+      <div class="module-title">Lambda & Serverless Architecture</div>
+      <div class="module-desc">Run code without managing servers. Pay only for execution time.</div>
+    </div>
+    <div class="module-icon">⚡</div>
+  </div>
+
+  <div class="analogy-box">
+    <div class="analogy-tag">💡 ANALOGY</div>
+    <p>Lambda is like a vending machine for code execution. You put in a request (coin), your code runs (snack drops), and billing stops immediately. No need to own the vending machine — Amazon does.</p>
+  </div>
+
+  <div class="concept-card" id="lam-1">
+    <div class="concept-head" onclick="toggleCard('lam-1')">
+      <div class="concept-icon">⚡</div>
+      <div class="concept-name">AWS Lambda — How It Works</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>Lambda runs your code in response to <strong>events</strong> without provisioning or managing servers.</p>
+      <ul class="feature-list">
+        <li>Supports Python, Node.js, Java, Go, Ruby, .NET, and custom runtimes</li>
+        <li>Billed per <strong>request + duration</strong> (in ms). Free Tier: 1M requests/month free forever!</li>
+        <li>Max execution time: <strong>15 minutes</strong> per invocation</li>
+        <li>Up to 10GB memory, 6 vCPUs (proportional to memory)</li>
+        <li>Each invocation is stateless — use DynamoDB/S3 for persistence</li>
+      </ul>
+      <div class="code-block">
+        <div class="code-header"><span>Lambda Function — Python Example</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="kw">import</span> json
+
+<span class="kw">def</span> lambda_handler(event, context):
+    <span class="cm"># event = input data (from API Gateway, S3, etc.)</span>
+    name = event.get(<span class="str">'name'</span>, <span class="str">'World'</span>)
+    
+    <span class="kw">return</span> {
+        <span class="str">'statusCode'</span>: <span class="num">200</span>,
+        <span class="str">'body'</span>: json.dumps({
+            <span class="str">'message'</span>: <span class="str">f'Hello, {name}!'</span>
+        })
+    }</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="lam-2">
+    <div class="concept-head" onclick="toggleCard('lam-2')">
+      <div class="concept-icon">🎯</div>
+      <div class="concept-name">Lambda Triggers & Use Cases</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <div class="grid-2">
+        <div class="card-mini">
+          <h4>Common Triggers</h4>
+          <p>API Gateway, S3 events, DynamoDB Streams, SQS/SNS messages, CloudWatch Events (scheduled), ALB, EventBridge</p>
+        </div>
+        <div class="card-mini">
+          <h4>Real Use Cases</h4>
+          <p>Image resizing on upload, form processing, microservices APIs, scheduled reports, real-time file processing</p>
+        </div>
+      </div>
+      <div class="arch-flow">
+        <div class="arch-node"><div class="icon">👤</div><div class="label">User</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="icon">🌐</div><div class="label">API Gateway</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="icon">⚡</div><div class="label">Lambda</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="icon">🗄️</div><div class="label">DynamoDB</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node"><div class="icon">📤</div><div class="label">Response</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="lam-3">
+    <div class="concept-head" onclick="toggleCard('lam-3')">
+      <div class="concept-icon">🌐</div>
+      <div class="concept-name">API Gateway</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>Amazon <strong>API Gateway</strong> creates, publishes, and manages REST, HTTP, and WebSocket APIs at any scale. It's the front door for Lambda-based backends.</p>
+      <ul class="feature-list">
+        <li>Handles authentication (IAM, Cognito, Lambda Authorizer)</li>
+        <li>Rate limiting, throttling, and quotas</li>
+        <li>Request/response transformation and validation</li>
+        <li>API versioning and deployment stages (dev, staging, prod)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz7">
+    <div class="quiz-title">🧠 Module Quiz — Lambda & Serverless</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. Your Lambda function needs to process images as soon as they are uploaded to S3. What triggers the function?</div>
+      <div class="quiz-options" data-q="0" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q7a"><div class="radio"></div>S3 Event Notifications trigger Lambda on object creation</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q7a"><div class="radio"></div>Lambda polls S3 every second for new files</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q7a"><div class="radio"></div>CloudWatch alarms trigger Lambda</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q7a"><div class="radio"></div>You must manually trigger Lambda after each upload</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. What is the maximum execution time for a single AWS Lambda invocation?</div>
+      <div class="quiz-options" data-q="1" data-ans="2">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q7b"><div class="radio"></div>1 minute</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q7b"><div class="radio"></div>5 minutes</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q7b"><div class="radio"></div>15 minutes</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q7b"><div class="radio"></div>1 hour</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz7', [0,2])">Submit Answers</button>
+    <div class="quiz-result" id="quiz7-result"></div>
+  </div>
+  <div class="completion-banner" id="done7">
+    <div style="font-size:2rem;">⚡</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 8 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(7)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 8: LOAD BALANCING & AUTO SCALING ═══════════════════ -->
+<section id="mod8" class="section fade-in">
+  <div class="module-header m-green">
+    <div class="module-num">09</div>
+    <div class="module-meta">
+      <div class="module-tag">Availability & Scale</div>
+      <div class="module-title">Load Balancing & Auto Scaling</div>
+      <div class="module-desc">Automatically distribute traffic and scale capacity to meet demand.</div>
+    </div>
+    <div class="module-icon">⚖️</div>
+  </div>
+
+  <div class="concept-card" id="elb-1">
+    <div class="concept-head" onclick="toggleCard('elb-1')">
+      <div class="concept-icon">⚖️</div>
+      <div class="concept-name">Elastic Load Balancer (ELB) Types</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>ELB distributes incoming traffic across multiple EC2 instances, containers, or Lambda functions for high availability.</p>
+      <div class="grid-3">
+        <div class="card-mini" style="border-color:rgba(0,212,255,0.3);">
+          <h4>ALB</h4>
+          <div style="font-size:0.7rem;color:var(--cyan);margin-bottom:6px;">Application Load Balancer</div>
+          <p>Layer 7 (HTTP/HTTPS). Routes by URL path, host headers, query strings. Best for web apps and microservices.</p>
+        </div>
+        <div class="card-mini" style="border-color:rgba(255,123,58,0.3);">
+          <h4>NLB</h4>
+          <div style="font-size:0.7rem;color:var(--orange);margin-bottom:6px;">Network Load Balancer</div>
+          <p>Layer 4 (TCP/UDP). Handles millions of requests/second with ultra-low latency. Best for gaming, real-time apps.</p>
+        </div>
+        <div class="card-mini" style="border-color:rgba(0,229,160,0.3);">
+          <h4>GLB</h4>
+          <div style="font-size:0.7rem;color:var(--green);margin-bottom:6px;">Gateway Load Balancer</div>
+          <p>For deploying/scaling virtual network appliances (firewalls, IDS/IPS). Layer 3.</p>
+        </div>
+      </div>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>A Load Balancer is like a traffic cop at a busy intersection. Instead of all cars going to one lane (server), the cop directs them evenly across all available lanes — no lane gets overwhelmed.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="asg-1">
+    <div class="concept-head" onclick="toggleCard('asg-1')">
+      <div class="concept-icon">📈</div>
+      <div class="concept-name">Auto Scaling Groups (ASG)</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>Auto Scaling automatically adds or removes EC2 instances based on demand, ensuring optimal performance and cost.</p>
+      <div class="grid-2">
+        <div class="card-mini">
+          <h4>Scaling Policies</h4>
+          <ul class="feature-list" style="margin-top:8px;">
+            <li><strong>Target Tracking</strong> — Keep CPU at 70%</li>
+            <li><strong>Step Scaling</strong> — Add 2 instances when CPU &gt; 80%</li>
+            <li><strong>Scheduled</strong> — Scale up every Friday at 5 PM</li>
+            <li><strong>Predictive</strong> — ML-based future scaling</li>
+          </ul>
+        </div>
+        <div class="card-mini">
+          <h4>ASG Configuration</h4>
+          <ul class="feature-list" style="margin-top:8px;">
+            <li><strong>Min</strong> — Never go below (e.g., 2 instances)</li>
+            <li><strong>Max</strong> — Never exceed (e.g., 10 instances)</li>
+            <li><strong>Desired</strong> — Current target count</li>
+            <li><strong>Launch Template</strong> — AMI + instance type</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz8">
+    <div class="quiz-title">🧠 Module Quiz — Load Balancing & Scaling</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. You need to route traffic to different microservices based on URL path (/api vs /web). Which load balancer is best?</div>
+      <div class="quiz-options" data-q="0" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q8a"><div class="radio"></div>ALB — Application Load Balancer (Layer 7, path-based routing)</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q8a"><div class="radio"></div>NLB — Network Load Balancer (Layer 4, TCP)</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q8a"><div class="radio"></div>GLB — Gateway Load Balancer</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q8a"><div class="radio"></div>Route 53 weighted routing</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. Your Auto Scaling Group has Min=2, Max=10, Desired=4. Traffic drops to almost zero. What happens?</div>
+      <div class="quiz-options" data-q="1" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q8b"><div class="radio"></div>All instances are terminated (goes to 0)</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q8b"><div class="radio"></div>Scales down to 2 (minimum) — never below min</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q8b"><div class="radio"></div>Remains at 4 (desired) always</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q8b"><div class="radio"></div>Scales up to 10 to prepare for traffic</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz8', [0,1])">Submit Answers</button>
+    <div class="quiz-result" id="quiz8-result"></div>
+  </div>
+  <div class="completion-banner" id="done8">
+    <div style="font-size:2rem;">⚖️</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 9 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(8)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 9: CLOUDFRONT & ROUTE 53 ═══════════════════ -->
+<section id="mod9" class="section fade-in">
+  <div class="module-header m-orange">
+    <div class="module-num">10</div>
+    <div class="module-meta">
+      <div class="module-tag">CDN & DNS</div>
+      <div class="module-title">CloudFront & Route 53</div>
+      <div class="module-desc">Global content delivery and intelligent DNS routing.</div>
+    </div>
+    <div class="module-icon">📡</div>
+  </div>
+
+  <div class="concept-card" id="cf-1">
+    <div class="concept-head" onclick="toggleCard('cf-1')">
+      <div class="concept-icon">⚡</div>
+      <div class="concept-name">Amazon CloudFront — CDN</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>CloudFront is a <strong>Content Delivery Network (CDN)</strong> that delivers content from 400+ Edge Locations globally — bringing files closer to users for faster performance.</p>
+      <ul class="feature-list">
+        <li><strong>Origins</strong> — S3 bucket, ALB, EC2, custom HTTP server</li>
+        <li><strong>Caching</strong> — Cache content at edge for defined TTL (Time-to-Live)</li>
+        <li><strong>HTTPS</strong> — SSL/TLS termination at the edge</li>
+        <li><strong>OAC (Origin Access Control)</strong> — Restrict S3 to only accept requests from CloudFront</li>
+        <li><strong>Lambda@Edge</strong> — Run serverless code at edge locations</li>
+      </ul>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>CloudFront is like having copies of your store's products stocked in convenience stores worldwide. A customer in Tokyo gets the product instantly from the local store — not shipped from your US warehouse each time.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="r53-1">
+    <div class="concept-head" onclick="toggleCard('r53-1')">
+      <div class="concept-icon">🔍</div>
+      <div class="concept-name">Route 53 — DNS Service</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>Route 53 is AWS's highly available and scalable DNS (Domain Name System) service. It translates domain names (myapp.com) to IP addresses.</p>
+      <h2 class="section-head" style="font-size:0.85rem;">Routing Policies</h2>
+      <table class="styled-table">
+        <thead><tr><th>Policy</th><th>How It Works</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td>Simple</td><td>Returns one value</td><td>Single resource</td></tr>
+          <tr><td>Weighted</td><td>Split traffic by % (80/20)</td><td>A/B testing, blue-green deploy</td></tr>
+          <tr><td>Latency</td><td>Routes to lowest-latency region</td><td>Multi-region apps</td></tr>
+          <tr><td>Failover</td><td>Primary → Secondary on health check fail</td><td>Disaster recovery</td></tr>
+          <tr><td>Geolocation</td><td>Routes by user's country/continent</td><td>Content localization</td></tr>
+          <tr><td>Multi-Value</td><td>Returns multiple healthy IPs</td><td>Simple load distribution</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz9">
+    <div class="quiz-title">🧠 Module Quiz — CloudFront & Route 53</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. A Route 53 routing policy sends 90% of traffic to us-east-1 and 10% to eu-west-1 for testing a new feature. This is called?</div>
+      <div class="quiz-options" data-q="0" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q9a"><div class="radio"></div>Latency-based routing</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q9a"><div class="radio"></div>Weighted routing</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q9a"><div class="radio"></div>Failover routing</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q9a"><div class="radio"></div>Geolocation routing</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. What is the main purpose of CloudFront?</div>
+      <div class="quiz-options" data-q="1" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q9b"><div class="radio"></div>Cache and deliver content from edge locations close to users for speed</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q9b"><div class="radio"></div>Manage domain registrations and DNS records</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q9b"><div class="radio"></div>Balance load across EC2 instances</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q9b"><div class="radio"></div>Encrypt data in transit</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz9', [1,0])">Submit Answers</button>
+    <div class="quiz-result" id="quiz9-result"></div>
+  </div>
+  <div class="completion-banner" id="done9">
+    <div style="font-size:2rem;">📡</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 10 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(9)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 10: MONITORING ═══════════════════ -->
+<section id="mod10" class="section fade-in">
+  <div class="module-header m-purple">
+    <div class="module-num">11</div>
+    <div class="module-meta">
+      <div class="module-tag">Observability</div>
+      <div class="module-title">Monitoring & Logging</div>
+      <div class="module-desc">CloudWatch, CloudTrail, and AWS Config for full system visibility.</div>
+    </div>
+    <div class="module-icon">📊</div>
+  </div>
+
+  <div class="concept-card" id="mon-1">
+    <div class="concept-head" onclick="toggleCard('mon-1')">
+      <div class="concept-icon">📊</div>
+      <div class="concept-name">Amazon CloudWatch</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>CloudWatch is AWS's monitoring and observability service. Think of it as the health dashboard for your entire AWS environment.</p>
+      <div class="grid-2">
+        <div class="card-mini">
+          <h4>📈 Metrics</h4>
+          <p>Collect and track metrics (CPU, memory, disk I/O, network). Create custom metrics from your app.</p>
+        </div>
+        <div class="card-mini">
+          <h4>🚨 Alarms</h4>
+          <p>Trigger actions when metrics exceed thresholds. Send SNS alert, scale ASG, or stop an EC2 instance.</p>
+        </div>
+        <div class="card-mini">
+          <h4>📝 Logs</h4>
+          <p>Centralized log management. Collect logs from EC2, Lambda, RDS, VPC Flow Logs, CloudTrail.</p>
+        </div>
+        <div class="card-mini">
+          <h4>📋 Dashboards</h4>
+          <p>Create custom visual dashboards with graphs, numbers, and alarms across multiple services.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="mon-2">
+    <div class="concept-head" onclick="toggleCard('mon-2')">
+      <div class="concept-icon">🕵️</div>
+      <div class="concept-name">AWS CloudTrail — API Audit Logging</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>CloudTrail records every API call made in your AWS account — who did what, when, and from where. Essential for security auditing and compliance.</p>
+      <ul class="feature-list">
+        <li>Logs are stored in S3 and optionally in CloudWatch Logs</li>
+        <li>Records: user identity, action performed, resources affected, timestamp, source IP</li>
+        <li>Enabled by default (90-day history in console). Create a "Trail" for unlimited history.</li>
+        <li>Use case: "Who deleted that S3 bucket?" → CloudTrail has the answer</li>
+      </ul>
+      <div class="info-box tip">
+        <div class="icon">💡</div>
+        <div><strong>CloudWatch vs CloudTrail:</strong> CloudWatch = WHAT is happening (performance metrics). CloudTrail = WHO did WHAT (API audit log).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="mon-3">
+    <div class="concept-head" onclick="toggleCard('mon-3')">
+      <div class="concept-icon">⚙️</div>
+      <div class="concept-name">AWS Config & Trusted Advisor</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <div class="grid-2">
+        <div class="card-mini">
+          <h4>AWS Config</h4>
+          <p>Continuously audits and records your AWS resource configurations. Checks for compliance against rules (e.g., "all S3 buckets must have encryption"). Tracks configuration history.</p>
+        </div>
+        <div class="card-mini">
+          <h4>Trusted Advisor</h4>
+          <p>AWS's automated best-practice checker. Reviews your account for cost optimization, security, fault tolerance, performance, and service limits. Think of it as an automated consultant.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz10">
+    <div class="quiz-title">🧠 Module Quiz — Monitoring</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. Your EC2 instance's CPU is consistently at 95%. You want to receive an email alert. Which AWS service handles this?</div>
+      <div class="quiz-options" data-q="0" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q10a"><div class="radio"></div>CloudWatch Alarm + SNS notification</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q10a"><div class="radio"></div>CloudTrail + SQS queue</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q10a"><div class="radio"></div>AWS Config rule violation</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q10a"><div class="radio"></div>Trusted Advisor check</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. You need to find out who changed your S3 bucket policy last week. Which service provides this information?</div>
+      <div class="quiz-options" data-q="1" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q10b"><div class="radio"></div>CloudWatch Logs</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q10b"><div class="radio"></div>AWS CloudTrail (API audit log)</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q10b"><div class="radio"></div>AWS Config history</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q10b"><div class="radio"></div>S3 access logs</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz10', [0,1])">Submit Answers</button>
+    <div class="quiz-result" id="quiz10-result"></div>
+  </div>
+  <div class="completion-banner" id="done10">
+    <div style="font-size:2rem;">📊</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 11 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(10)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 11: IaC ═══════════════════ -->
+<section id="mod11" class="section fade-in">
+  <div class="module-header m-cyan">
+    <div class="module-num">12</div>
+    <div class="module-meta">
+      <div class="module-tag">DevOps / Automation</div>
+      <div class="module-title">Infrastructure as Code</div>
+      <div class="module-desc">CloudFormation, CDK, and Elastic Beanstalk — provision AWS with code.</div>
+    </div>
+    <div class="module-icon">📋</div>
+  </div>
+
+  <div class="concept-card" id="iac-1">
+    <div class="concept-head" onclick="toggleCard('iac-1')">
+      <div class="concept-icon">📄</div>
+      <div class="concept-name">AWS CloudFormation</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>CloudFormation lets you provision <strong>all your AWS infrastructure in YAML or JSON templates</strong>. Define your architecture in code and deploy it consistently, repeatedly.</p>
+      <ul class="feature-list">
+        <li>Creates a <strong>Stack</strong> of resources from a template</li>
+        <li>If stack creation fails, it automatically rolls back</li>
+        <li>Version-controlled infrastructure (store templates in Git)</li>
+        <li>Free! You only pay for the resources it creates</li>
+      </ul>
+      <div class="code-block">
+        <div class="code-header"><span>CloudFormation Template (YAML) — S3 Bucket</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="key">AWSTemplateFormatVersion</span>: <span class="str">'2010-09-09'</span>
+<span class="key">Description</span>: <span class="str">'Simple S3 Bucket Stack'</span>
+
+<span class="key">Resources</span>:
+  <span class="key">MyS3Bucket</span>:
+    <span class="kw">Type</span>: <span class="str">AWS::S3::Bucket</span>
+    <span class="kw">Properties</span>:
+      <span class="key">BucketName</span>: <span class="str">my-unique-bucket-name-2024</span>
+      <span class="key">VersioningConfiguration</span>:
+        <span class="key">Status</span>: <span class="str">Enabled</span>
+
+<span class="key">Outputs</span>:
+  <span class="key">BucketName</span>:
+    <span class="key">Value</span>: !Ref MyS3Bucket</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="iac-2">
+    <div class="concept-head" onclick="toggleCard('iac-2')">
+      <div class="concept-icon">🌱</div>
+      <div class="concept-name">Elastic Beanstalk</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>Elastic Beanstalk is a PaaS service. You <strong>upload your code</strong> and AWS automatically handles deployment, load balancing, auto-scaling, and monitoring.</p>
+      <ul class="feature-list">
+        <li>Supports: Node.js, Python, Ruby, Java, .NET, PHP, Go, Docker</li>
+        <li>You retain full control of the underlying EC2 resources</li>
+        <li>Free — pay only for the AWS resources (EC2, RDS, etc.)</li>
+        <li>Best for developers who want to focus on code, not infrastructure</li>
+      </ul>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>Elastic Beanstalk is like Heroku for AWS. Drop in your code, and AWS sets up everything automatically — the servers, load balancer, deployment pipeline.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="iac-3">
+    <div class="concept-head" onclick="toggleCard('iac-3')">
+      <div class="concept-icon">💻</div>
+      <div class="concept-name">AWS CDK — Cloud Development Kit</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>AWS CDK lets you define cloud infrastructure using familiar programming languages (Python, TypeScript, Java, C#) instead of YAML/JSON. It generates CloudFormation templates under the hood.</p>
+      <div class="code-block">
+        <div class="code-header"><span>AWS CDK — Python: Create an S3 Bucket</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="kw">from</span> aws_cdk <span class="kw">import</span> (
+    Stack,
+    aws_s3 <span class="kw">as</span> s3,
+)
+<span class="kw">from</span> constructs <span class="kw">import</span> Construct
+
+<span class="kw">class</span> MyStack(Stack):
+    <span class="kw">def</span> __init__(self, scope: Construct, id: str):
+        super().__init__(scope, id)
+        
+        bucket = s3.Bucket(self, <span class="str">"MyBucket"</span>,
+            versioned=<span class="kw">True</span>,
+            encryption=s3.BucketEncryption.S3_MANAGED
+        )</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz11">
+    <div class="quiz-title">🧠 Module Quiz — IaC</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. Your team needs to deploy the same 3-tier architecture (EC2, RDS, ELB) across 5 different environments consistently. Best approach?</div>
+      <div class="quiz-options" data-q="0" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q11a"><div class="radio"></div>Manually create resources in the console for each environment</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q11a"><div class="radio"></div>Use a CloudFormation template and deploy it as separate stacks</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q11a"><div class="radio"></div>Use Elastic Beanstalk for database management</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q11a"><div class="radio"></div>Copy EC2 instances between environments</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz11', [1])">Submit Answers</button>
+    <div class="quiz-result" id="quiz11-result"></div>
+  </div>
+  <div class="completion-banner" id="done11">
+    <div style="font-size:2rem;">📋</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 12 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(11)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 12: MESSAGING ═══════════════════ -->
+<section id="mod12" class="section fade-in">
+  <div class="module-header m-orange">
+    <div class="module-num">13</div>
+    <div class="module-meta">
+      <div class="module-tag">Decoupling</div>
+      <div class="module-title">Messaging: SQS & SNS</div>
+      <div class="module-desc">Decouple your application components for resilience and scalability.</div>
+    </div>
+    <div class="module-icon">📨</div>
+  </div>
+
+  <div class="concept-card" id="sqs-1">
+    <div class="concept-head" onclick="toggleCard('sqs-1')">
+      <div class="concept-icon">📬</div>
+      <div class="concept-name">Amazon SQS — Simple Queue Service</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>SQS is a managed message queue that lets you decouple and scale distributed applications. Producers send messages; consumers process them at their own pace.</p>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>SQS is like a ticket queue at a concert. People line up (messages added to queue), and staff (consumers) serve one person at a time. No one is turned away, and service happens at a sustainable pace.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card-mini">
+          <h4>Standard Queue</h4>
+          <p>Unlimited throughput. Best-effort ordering. At-least-once delivery. Messages may arrive out of order or duplicate.</p>
+        </div>
+        <div class="card-mini">
+          <h4>FIFO Queue</h4>
+          <p>Exactly-once processing. First-In-First-Out order guaranteed. Up to 300 msg/sec (or 3,000 with batching).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="sns-1">
+    <div class="concept-head" onclick="toggleCard('sns-1')">
+      <div class="concept-icon">📢</div>
+      <div class="concept-name">Amazon SNS — Simple Notification Service</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>SNS is a pub/sub messaging service. A publisher sends one message to a <strong>Topic</strong>, and it's instantly delivered to all <strong>subscribers</strong>.</p>
+      <ul class="feature-list">
+        <li>Subscribers can be: SQS queues, Lambda functions, HTTP endpoints, email, SMS, mobile push</li>
+        <li>Fan-out pattern: one SNS message → multiple SQS queues simultaneously</li>
+        <li>Real-time delivery (vs SQS which is polled)</li>
+      </ul>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>SNS is like a radio broadcast (publish). When you speak (publish a topic), everyone tuned in (subscribers) hears it simultaneously. SQS is like a voicemail (queue) — messages wait until picked up.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz12">
+    <div class="quiz-title">🧠 Module Quiz — Messaging</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. An e-commerce app needs to process 10,000 orders per hour, but the payment service can only handle 100 at a time. What should you use?</div>
+      <div class="quiz-options" data-q="0" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q12a"><div class="radio"></div>SQS to buffer orders and process at the payment service's rate</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q12a"><div class="radio"></div>SNS to broadcast each order to all payment processors</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q12a"><div class="radio"></div>Increase the payment server size to handle all orders directly</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q12a"><div class="radio"></div>Use Route 53 to distribute order requests</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz12', [0])">Submit Answers</button>
+    <div class="quiz-result" id="quiz12-result"></div>
+  </div>
+  <div class="completion-banner" id="done12">
+    <div style="font-size:2rem;">📨</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 13 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(12)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 13: CONTAINERS ═══════════════════ -->
+<section id="mod13" class="section fade-in">
+  <div class="module-header m-green">
+    <div class="module-num">14</div>
+    <div class="module-meta">
+      <div class="module-tag">Containers</div>
+      <div class="module-title">Containers: ECS, EKS & ECR</div>
+      <div class="module-desc">Run Docker containers at scale with full orchestration.</div>
+    </div>
+    <div class="module-icon">🐳</div>
+  </div>
+
+  <div class="concept-card" id="con-1">
+    <div class="concept-head" onclick="toggleCard('con-1')">
+      <div class="concept-icon">📦</div>
+      <div class="concept-name">What are Containers & Docker?</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>Containers package your application code + dependencies into a portable, lightweight unit that runs consistently everywhere.</p>
+      <div class="analogy-box">
+        <div class="analogy-tag">💡 ANALOGY</div>
+        <p>A container is like a shipping container. It holds everything the app needs. Whether loaded onto a ship (AWS), truck (Azure), or train (GCP), it works the same way — no surprises at delivery.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="con-2">
+    <div class="concept-head" onclick="toggleCard('con-2')">
+      <div class="concept-icon">🚀</div>
+      <div class="concept-name">ECS — Elastic Container Service</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>ECS is AWS's native container orchestration service. It manages running, stopping, and scaling Docker containers.</p>
+      <div class="grid-2">
+        <div class="card-mini">
+          <h4>ECS on EC2</h4>
+          <p>You manage the underlying EC2 instances (container hosts). More control over infrastructure.</p>
+        </div>
+        <div class="card-mini" style="border-color:rgba(0,229,160,0.3);">
+          <h4>ECS on Fargate ✨</h4>
+          <p>Serverless containers — AWS manages the host. You only define CPU/memory and your container. Zero server management.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="con-3">
+    <div class="concept-head" onclick="toggleCard('con-3')">
+      <div class="concept-icon">☸️</div>
+      <div class="concept-name">EKS — Elastic Kubernetes Service</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>EKS is a managed Kubernetes (K8s) service on AWS. If your team already uses Kubernetes or needs maximum portability/power, choose EKS.</p>
+      <ul class="feature-list">
+        <li>AWS manages the Kubernetes control plane (API server, etcd)</li>
+        <li>You manage worker nodes (or use Fargate for serverless nodes)</li>
+        <li>Best for complex microservices, multi-cluster setups, teams with K8s expertise</li>
+      </ul>
+      <table class="styled-table">
+        <thead><tr><th>Feature</th><th>ECS</th><th>EKS</th></tr></thead>
+        <tbody>
+          <tr><td>Learning curve</td><td>Low (AWS native)</td><td>Higher (Kubernetes)</td></tr>
+          <tr><td>Portability</td><td>AWS only</td><td>Any Kubernetes cluster</td></tr>
+          <tr><td>Cost</td><td>Lower</td><td>$0.10/hr control plane</td></tr>
+          <tr><td>Best for</td><td>AWS-first teams</td><td>K8s-experienced teams</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept-card" id="con-4">
+    <div class="concept-head" onclick="toggleCard('con-4')">
+      <div class="concept-icon">🏪</div>
+      <div class="concept-name">ECR — Elastic Container Registry</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>ECR is AWS's private Docker image registry — like Docker Hub but integrated with IAM for secure access control. Store, manage, and deploy container images.</p>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz13">
+    <div class="quiz-title">🧠 Module Quiz — Containers</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. You want to run containers without managing any EC2 instances. Which AWS option should you choose?</div>
+      <div class="quiz-options" data-q="0" data-ans="2">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q13a"><div class="radio"></div>ECS on EC2 launch type</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q13a"><div class="radio"></div>EKS with self-managed nodes</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q13a"><div class="radio"></div>ECS or EKS on AWS Fargate (serverless)</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q13a"><div class="radio"></div>EC2 with Docker installed manually</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz13', [2])">Submit Answers</button>
+    <div class="quiz-result" id="quiz13-result"></div>
+  </div>
+  <div class="completion-banner" id="done13">
+    <div style="font-size:2rem;">🐳</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 14 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(13)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 14: SECURITY ═══════════════════ -->
+<section id="mod14" class="section fade-in">
+  <div class="module-header m-purple">
+    <div class="module-num">15</div>
+    <div class="module-meta">
+      <div class="module-tag">Security</div>
+      <div class="module-title">Security & Compliance</div>
+      <div class="module-desc">Shared responsibility model, encryption, DDoS protection, and secrets management.</div>
+    </div>
+    <div class="module-icon">🛡️</div>
+  </div>
+
+  <div class="concept-card" id="sec-1">
+    <div class="concept-head" onclick="toggleCard('sec-1')">
+      <div class="concept-icon">🤝</div>
+      <div class="concept-name">Shared Responsibility Model</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <p>AWS and the customer share security responsibilities — but in different areas.</p>
+      <div class="grid-2">
+        <div class="card-mini" style="border-color:rgba(255,123,58,0.3);">
+          <h4>🏢 AWS Responsible For</h4>
+          <p>"Security <strong>of</strong> the cloud" — Physical data center security, hardware, hypervisor, managed service software (RDS patching, etc.)</p>
+        </div>
+        <div class="card-mini" style="border-color:rgba(0,212,255,0.3);">
+          <h4>👤 Customer Responsible For</h4>
+          <p>"Security <strong>in</strong> the cloud" — Your OS patching, application security, data encryption, IAM permissions, network config</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="sec-2">
+    <div class="concept-head" onclick="toggleCard('sec-2')">
+      <div class="concept-icon">🔑</div>
+      <div class="concept-name">KMS, Secrets Manager & ACM</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <div class="grid-3">
+        <div class="card-mini">
+          <h4>🔑 KMS</h4>
+          <p>AWS Key Management Service. Create and manage encryption keys for data at rest. Used by S3, RDS, EBS, and most AWS services.</p>
+        </div>
+        <div class="card-mini">
+          <h4>🔒 Secrets Manager</h4>
+          <p>Store and rotate database passwords, API keys, and other secrets. Applications retrieve secrets via API — no hardcoded credentials.</p>
+        </div>
+        <div class="card-mini">
+          <h4>📜 ACM</h4>
+          <p>AWS Certificate Manager. Free SSL/TLS certificates for your domains, integrated with ALB and CloudFront.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="sec-3">
+    <div class="concept-head" onclick="toggleCard('sec-3')">
+      <div class="concept-icon">🛡️</div>
+      <div class="concept-name">AWS Shield & WAF</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <div class="grid-2">
+        <div class="card-mini">
+          <h4>🛡️ AWS Shield</h4>
+          <p><strong>Standard</strong> (free): Automatic DDoS protection for all AWS customers. Protects against Layer 3/4 attacks.<br><strong>Advanced</strong> ($3000/month): Enhanced protection, real-time visibility, cost protection.</p>
+        </div>
+        <div class="card-mini">
+          <h4>🧱 AWS WAF</h4>
+          <p>Web Application Firewall. Filter HTTP requests based on rules (SQL injection, XSS, geo-blocking, rate limiting). Integrates with ALB, CloudFront, API Gateway.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz14">
+    <div class="quiz-title">🧠 Module Quiz — Security</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. Your application's database password is hardcoded in the source code. What AWS service should you use instead?</div>
+      <div class="quiz-options" data-q="0" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q14a"><div class="radio"></div>AWS KMS — store encrypted passwords</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q14a"><div class="radio"></div>AWS Secrets Manager — retrieve secrets via API, auto-rotate</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q14a"><div class="radio"></div>IAM Policy — limit who can see the password</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q14a"><div class="radio"></div>CloudTrail — audit password usage</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. Who is responsible for patching the OS on an EC2 instance?</div>
+      <div class="quiz-options" data-q="1" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q14b"><div class="radio"></div>The customer (you) — EC2 OS is your responsibility</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q14b"><div class="radio"></div>AWS automatically patches all EC2 instances</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q14b"><div class="radio"></div>Shared 50/50 between AWS and customer</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q14b"><div class="radio"></div>AWS patches it only if you use RDS</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz14', [1,0])">Submit Answers</button>
+    <div class="quiz-result" id="quiz14-result"></div>
+  </div>
+  <div class="completion-banner" id="done14">
+    <div style="font-size:2rem;">🛡️</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 15 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(14)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE 15: PRICING ═══════════════════ -->
+<section id="mod15" class="section fade-in">
+  <div class="module-header m-cyan">
+    <div class="module-num">16</div>
+    <div class="module-meta">
+      <div class="module-tag">Business / Cost</div>
+      <div class="module-title">Pricing & Support Plans</div>
+      <div class="module-desc">Understanding AWS billing, free tier, and choosing the right support level.</div>
+    </div>
+    <div class="module-icon">💰</div>
+  </div>
+
+  <div class="concept-card" id="pri-1">
+    <div class="concept-head" onclick="toggleCard('pri-1')">
+      <div class="concept-icon">🆓</div>
+      <div class="concept-name">AWS Free Tier</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <div class="grid-3">
+        <div class="card-mini" style="border-color:rgba(0,229,160,0.3);">
+          <h4>Always Free</h4>
+          <p>Lambda: 1M requests/month. DynamoDB: 25GB. CloudWatch: basic metrics. Never expire.</p>
+        </div>
+        <div class="card-mini" style="border-color:rgba(0,212,255,0.3);">
+          <h4>12 Months Free</h4>
+          <p>EC2 t2/t3.micro: 750 hrs/month. S3: 5GB. RDS: 750 hrs. Starts from account creation date.</p>
+        </div>
+        <div class="card-mini">
+          <h4>Free Trials</h4>
+          <p>Short-term trials for services like SageMaker, Redshift, Lightsail. Time or usage limited.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card" id="pri-2">
+    <div class="concept-head" onclick="toggleCard('pri-2')">
+      <div class="concept-icon">💳</div>
+      <div class="concept-name">AWS Pricing Fundamentals</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <ul class="feature-list">
+        <li><strong>Pay as you go</strong> — No upfront costs, no termination fees</li>
+        <li><strong>Pay less when you use more</strong> — Volume discounts (S3 tiered pricing)</li>
+        <li><strong>Pay less by reserving</strong> — Reserved Instances, Savings Plans</li>
+        <li><strong>Data Transfer</strong> — Inbound to AWS is free. Outbound to internet costs money.</li>
+        <li><strong>Cost Explorer</strong> — Visualize, understand, and manage your AWS costs</li>
+        <li><strong>AWS Budgets</strong> — Set spending limits and receive alerts</li>
+        <li><strong>AWS Pricing Calculator</strong> — Estimate costs before you build</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="concept-card" id="pri-3">
+    <div class="concept-head" onclick="toggleCard('pri-3')">
+      <div class="concept-icon">📞</div>
+      <div class="concept-name">AWS Support Plans</div>
+      <div class="concept-chevron">▶</div>
+    </div>
+    <div class="concept-body">
+      <table class="styled-table">
+        <thead><tr><th>Plan</th><th>Price</th><th>Response Time</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill pill-green">Basic</span></td><td>Free</td><td>No support cases</td><td>Personal projects</td></tr>
+          <tr><td><span class="pill pill-cyan">Developer</span></td><td>$29/mo min</td><td>Business hours, 12hrs</td><td>Dev/test environments</td></tr>
+          <tr><td><span class="pill pill-orange">Business</span></td><td>$100/mo min</td><td>24/7, 1hr critical</td><td>Production workloads</td></tr>
+          <tr><td><span class="pill pill-purple">Enterprise On-Ramp</span></td><td>$5,500/mo min</td><td>30 min critical</td><td>Business critical</td></tr>
+          <tr><td><span class="pill pill-purple">Enterprise</span></td><td>$15,000/mo min</td><td>15 min critical + TAM</td><td>Mission-critical apps</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box tip">
+        <div class="icon">💡</div>
+        <div>A <strong>TAM (Technical Account Manager)</strong> is a dedicated AWS engineer assigned to your account (Enterprise plan only) who proactively helps optimize your architecture.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-block" id="quiz15">
+    <div class="quiz-title">🧠 Module Quiz — Pricing & Support</div>
+    <div class="quiz-subtitle">// answer all questions then submit</div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. A new startup wants to test AWS for free. Which EC2 instance type is included in the 12-month free tier?</div>
+      <div class="quiz-options" data-q="0" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q15a"><div class="radio"></div>c5.large — compute optimized</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q15a"><div class="radio"></div>t2.micro or t3.micro — 750 hours/month</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q15a"><div class="radio"></div>r5.xlarge — memory optimized</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q15a"><div class="radio"></div>m5.medium — general purpose</label>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. A company with production workloads needs 24/7 phone support with 1-hour response for critical issues. Which plan?</div>
+      <div class="quiz-options" data-q="1" data-ans="2">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q15b"><div class="radio"></div>Basic — free</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q15b"><div class="radio"></div>Developer — $29/month</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q15b"><div class="radio"></div>Business — $100/month with 24/7 + 1hr critical response</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="q15b"><div class="radio"></div>Basic — free tier</label>
+      </div>
+    </div>
+    <button class="quiz-submit" onclick="submitQuiz('quiz15', [1,2])">Submit Answers</button>
+    <div class="quiz-result" id="quiz15-result"></div>
+  </div>
+  <div class="completion-banner" id="done15">
+    <div style="font-size:2rem;">💰</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0;">Module 16 Complete!</div>
+    <button class="mark-done-btn" onclick="markDone(15)">Mark as Complete ✓</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ FINAL QUIZ & CERTIFICATE ═══════════════════ -->
+<section id="final-quiz" class="section fade-in">
+  <div class="module-header" style="--module-color:var(--yellow);--module-color-dim:rgba(251,191,36,0.12);">
+    <div class="module-num">★</div>
+    <div class="module-meta">
+      <div class="module-tag" style="color:var(--yellow);">Assessment</div>
+      <div class="module-title">Final Exam — AWS Cloud Mastery</div>
+      <div class="module-desc">Test your knowledge across all 16 modules. Score 70%+ to earn your certificate.</div>
+    </div>
+    <div class="module-icon" style="background:rgba(251,191,36,0.12);border-color:var(--yellow);">🏆</div>
+  </div>
+
+  <div class="quiz-block" id="finalq" style="margin-top:0;">
+    <div class="quiz-title">🎓 Final Assessment — 10 Questions</div>
+    <div class="quiz-subtitle">// pass score: 7/10 (70%)</div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q1. Which AWS service provides a virtual private network in the cloud with subnets, route tables, and gateways?</div>
+      <div class="quiz-options" data-q="0" data-ans="2">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq0"><div class="radio"></div>IAM</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq0"><div class="radio"></div>EC2</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq0"><div class="radio"></div>VPC — Virtual Private Cloud</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq0"><div class="radio"></div>CloudFront</label>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q2. What AWS service do you use to run code without provisioning servers, billing only for execution time?</div>
+      <div class="quiz-options" data-q="1" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq1"><div class="radio"></div>EC2 with auto-scaling</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq1"><div class="radio"></div>AWS Lambda</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq1"><div class="radio"></div>ECS on EC2</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq1"><div class="radio"></div>Elastic Beanstalk</label>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q3. 11 nines durability (99.999999999%) is associated with which AWS storage service?</div>
+      <div class="quiz-options" data-q="2" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq2"><div class="radio"></div>Amazon S3</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq2"><div class="radio"></div>Amazon EBS</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq2"><div class="radio"></div>Amazon EFS</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq2"><div class="radio"></div>Amazon Glacier only</label>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q4. Which IAM entity is best suited for granting an EC2 instance permission to access S3?</div>
+      <div class="quiz-options" data-q="3" data-ans="2">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq3"><div class="radio"></div>IAM User with access keys embedded in the app</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq3"><div class="radio"></div>IAM Group attached to the instance</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq3"><div class="radio"></div>IAM Role attached to the EC2 instance</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq3"><div class="radio"></div>Root account credentials stored in User Data</label>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q5. You need the lowest latency for users in multiple continents. Which AWS service serves cached content from Edge Locations globally?</div>
+      <div class="quiz-options" data-q="4" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq4"><div class="radio"></div>Amazon CloudFront (CDN)</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq4"><div class="radio"></div>Amazon Route 53</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq4"><div class="radio"></div>AWS Global Accelerator only</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq4"><div class="radio"></div>Elastic Load Balancer (ALB)</label>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q6. Which database service is AWS's own cloud-native relational DB, 5x faster than MySQL?</div>
+      <div class="quiz-options" data-q="5" data-ans="2">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq5"><div class="radio"></div>RDS MySQL</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq5"><div class="radio"></div>DynamoDB</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq5"><div class="radio"></div>Amazon Aurora</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq5"><div class="radio"></div>ElastiCache</label>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q7. CloudTrail's primary purpose is to:</div>
+      <div class="quiz-options" data-q="6" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq6"><div class="radio"></div>Monitor EC2 CPU and memory performance metrics</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq6"><div class="radio"></div>Record all API calls made in your AWS account for auditing</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq6"><div class="radio"></div>Automatically patch EC2 instances</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq6"><div class="radio"></div>Route traffic between availability zones</label>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q8. Which AWS service allows you to define your entire infrastructure in YAML/JSON templates that can be versioned and repeated?</div>
+      <div class="quiz-options" data-q="7" data-ans="0">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq7"><div class="radio"></div>AWS CloudFormation</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq7"><div class="radio"></div>Elastic Beanstalk</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq7"><div class="radio"></div>AWS Config</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq7"><div class="radio"></div>AWS Trusted Advisor</label>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q9. Physically, what separates two Availability Zones within the same AWS Region?</div>
+      <div class="quiz-options" data-q="8" data-ans="1">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq8"><div class="radio"></div>They are in the same building on different floors</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq8"><div class="radio"></div>Many kilometers apart — physically separate data center facilities</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq8"><div class="radio"></div>They are in completely different countries</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq8"><div class="radio"></div>AZs are virtual — there is no physical separation</label>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="quiz-q-text">Q10. Under the Shared Responsibility Model, which of these is AWS responsible for?</div>
+      <div class="quiz-options" data-q="9" data-ans="3">
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq9"><div class="radio"></div>Configuring Security Groups on your EC2 instances</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq9"><div class="radio"></div>Encrypting your S3 data</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq9"><div class="radio"></div>Managing IAM users and permissions</label>
+        <label class="quiz-opt" onclick="selectOpt(this)"><input type="radio" name="fq9"><div class="radio"></div>Physical security of data center hardware</label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" id="final-submit-btn" onclick="submitFinalQuiz()">Submit Final Exam 🎓</button>
+    <div class="quiz-result" id="finalq-result"></div>
+  </div>
+</section>
+
+<!-- CERTIFICATE -->
+<section id="certificate" class="section fade-in" style="display:none;">
+  <div class="cert-box">
+    <div style="font-size:3rem;margin-bottom:16px;">🏆</div>
+    <div class="cert-title">AWS Cloud Mastery</div>
+    <div class="cert-sub">Certificate of Completion</div>
+    <div class="cert-sub">This certifies completion of the</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text);margin:8px 0;">Interactive AWS Cloud Technician Course</div>
+    <div style="color:var(--text-muted);font-size:0.82rem;margin-bottom:24px;">All 16 modules completed · Final exam passed</div>
+    <div class="cert-score" id="cert-score-display">—</div>
+    <div style="color:var(--text-muted);font-size:0.82rem;margin-top:8px;">Final Score</div>
+    <div class="cert-modules" id="cert-modules-list"></div>
+    <div style="margin-top:24px;color:var(--text-muted);font-size:0.78rem;font-family:'IBM Plex Mono',monospace;">
+      Issued: <span id="cert-date"></span>
+    </div>
+  </div>
+</section>
+
+</div><!-- /main -->
+
+<script>
+// ════════════════════════════════════════
+//   STATE
+// ════════════════════════════════════════
+const state = {
+  modules: Array(16).fill(false),
+  quizScores: {},
+  finalScore: null,
+};
+
+// Load from localStorage
+try {
+  const saved = JSON.parse(localStorage.getItem('aws_mastery_state') || '{}');
+  if (saved.modules) state.modules = saved.modules;
+  if (saved.quizScores) state.quizScores = saved.quizScores;
+} catch(e) {}
+
+function saveState() {
+  try { localStorage.setItem('aws_mastery_state', JSON.stringify(state)); } catch(e) {}
+}
+
+// ════════════════════════════════════════
+//   PROGRESS
+// ════════════════════════════════════════
+function updateProgress() {
+  const done = state.modules.filter(Boolean).length;
+  const pct = Math.round((done / 16) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  state.modules.forEach((v, i) => {
+    const chk = document.getElementById('chk' + i);
+    const navItem = document.querySelector(`.nav-item[data-mod="${i}"]`);
+    if (chk) chk.textContent = v ? '✓' : '○';
+    if (navItem) navItem.classList.toggle('done', v);
+  });
+}
+
+function markDone(idx) {
+  state.modules[idx] = true;
+  saveState();
+  updateProgress();
+  const btn = document.querySelector(`#done${idx} .mark-done-btn`);
+  if (btn) { btn.textContent = '✓ Completed!'; btn.disabled = true; btn.style.opacity = '0.6'; }
+}
+
+// ════════════════════════════════════════
+//   CARDS & TABS
+// ════════════════════════════════════════
+function toggleCard(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+function switchTab(btn, panelId) {
+  const container = btn.closest('.tabs');
+  container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// ════════════════════════════════════════
+//   QUIZ LOGIC
+// ════════════════════════════════════════
+function selectOpt(label) {
+  const group = label.closest('.quiz-options');
+  group.querySelectorAll('.quiz-opt').forEach(l => l.classList.remove('selected'));
+  label.classList.add('selected');
+}
+
+function submitQuiz(quizId, answers) {
+  const quiz = document.getElementById(quizId);
+  const groups = quiz.querySelectorAll('.quiz-options');
+  let correct = 0;
+
+  groups.forEach((group, i) => {
+    const correctIdx = answers[i];
+    const opts = group.querySelectorAll('.quiz-opt');
+    const selected = group.querySelector('.quiz-opt.selected');
+
+    if (!selected) return;
+
+    const selectedIdx = Array.from(opts).indexOf(selected);
+    opts[correctIdx].classList.add('correct');
+
+    if (selectedIdx === correctIdx) {
+      correct++;
+    } else {
+      selected.classList.add('wrong');
+    }
+  });
+
+  const total = groups.length;
+  const resultEl = document.getElementById(quizId + '-result');
+  const pass = correct >= Math.ceil(total * 0.6);
+  resultEl.className = 'quiz-result show ' + (pass ? 'pass' : 'fail');
+  resultEl.innerHTML = `
+    <div class="quiz-score">${correct}/${total}</div>
+    <div style="margin-top:6px;">${pass ? '✅ Great work! You passed this module quiz.' : '❌ Review the material and try again!'}</div>
+  `;
+
+  quiz.querySelector('.quiz-submit').disabled = true;
+  quiz.querySelectorAll('.quiz-opt').forEach(o => o.style.pointerEvents = 'none');
+
+  state.quizScores[quizId] = { correct, total };
+  saveState();
+
+  // Show completion banner
+  const modNum = quizId.replace('quiz', '');
+  if (!isNaN(modNum) && pass) {
+    const banner = document.getElementById('done' + modNum);
+    if (banner) banner.classList.add('show');
+  }
+}
+
+function submitFinalQuiz() {
+  const quiz = document.getElementById('finalq');
+  const groups = quiz.querySelectorAll('.quiz-options');
+  const answers = [2,1,0,2,0,2,1,0,1,3];
+  let correct = 0;
+  let allAnswered = true;
+
+  groups.forEach((group, i) => {
+    const selected = group.querySelector('.quiz-opt.selected');
+    if (!selected) { allAnswered = false; return; }
+    const opts = group.querySelectorAll('.quiz-opt');
+    const selectedIdx = Array.from(opts).indexOf(selected);
+    opts[answers[i]].classList.add('correct');
+    if (selectedIdx === answers[i]) correct++;
+    else selected.classList.add('wrong');
+  });
+
+  if (!allAnswered) {
+    alert('Please answer all 10 questions before submitting!');
+    return;
+  }
+
+  const pass = correct >= 7;
+  const resultEl = document.getElementById('finalq-result');
+  resultEl.className = 'quiz-result show ' + (pass ? 'pass' : 'fail');
+  resultEl.innerHTML = `
+    <div class="quiz-score">${correct}/10 — ${Math.round(correct*10)}%</div>
+    <div style="margin-top:8px;">
+      ${pass 
+        ? '🎉 <strong>Congratulations!</strong> You passed the final exam! Scroll down for your certificate.' 
+        : '❌ You scored below 70%. Review the modules and try again — you got this!'}
+    </div>
+  `;
+
+  document.getElementById('final-submit-btn').disabled = true;
+  quiz.querySelectorAll('.quiz-opt').forEach(o => o.style.pointerEvents = 'none');
+
+  if (pass) {
+    state.finalScore = `${correct}/10 (${Math.round(correct*10)}%)`;
+    saveState();
+    setTimeout(() => showCertificate(correct), 800);
+  }
+}
+
+function showCertificate(score) {
+  const cert = document.getElementById('certificate');
+  cert.style.display = 'block';
+  document.getElementById('cert-score-display').textContent = score + '/10';
+  document.getElementById('cert-date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const modules = ['Cloud Basics','Global Infra','IAM','EC2','S3','VPC','Databases','Lambda','Load Balancing','CloudFront','Monitoring','IaC','Messaging','Containers','Security','Pricing'];
+  const list = document.getElementById('cert-modules-list');
+  list.innerHTML = modules.map(m => `<span class="pill pill-green">✓ ${m}</span>`).join('');
+  cert.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ════════════════════════════════════════
+//   SIDEBAR
+// ════════════════════════════════════════
+function setActive(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  if (window.innerWidth <= 900) toggleSidebar();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// Scroll spy
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  document.querySelectorAll('.nav-item').forEach(n => {
+    const href = n.getAttribute('href');
+    n.classList.toggle('active', href === '#' + current);
+  });
+}, { passive: true });
+
+// ════════════════════════════════════════
+//   COPY CODE
+// ════════════════════════════════════════
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ════════════════════════════════════════
+//   SEARCH
+// ════════════════════════════════════════
+
+
+// ════════════════════════════════════════
+//   INTERSECTION OBSERVER (fade in)
+// ════════════════════════════════════════
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.05 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ════════════════════════════════════════
+//   INIT
+// ════════════════════════════════════════
+updateProgress();
+
+// Restore completed banners
+state.modules.forEach((v, i) => {
+  if (v) {
+    const banner = document.getElementById('done' + i);
+    if (banner) {
+      banner.classList.add('show');
+      const btn = banner.querySelector('.mark-done-btn');
+      if (btn) { btn.textContent = '✓ Completed!'; btn.disabled = true; btn.style.opacity = '0.6'; }
+    }
+  }
+});
+</script>
+</body>
+</html>
